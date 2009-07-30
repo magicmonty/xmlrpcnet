@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2007, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -23,64 +23,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#if !FX1_0
-
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.IO;
-  using System.Net;
-
-  public class XmlRpcListenerResponse : CookComputing.XmlRpc.IHttpResponse
+  public class XmlRpcBoolean 
   {
-    public XmlRpcListenerResponse(HttpListenerResponse response)
+    private bool _value;
+
+    public XmlRpcBoolean()
     {
-      this.response = response;
-      response.SendChunked = false;
     }
 
-    Int64 IHttpResponse.ContentLength
+    public XmlRpcBoolean(bool val) 
     {
-      get { return response.ContentLength64; }
-      set { response.ContentLength64 = value; }
+      this._value = val;
     }
 
-    string IHttpResponse.ContentType
+    public override string ToString() 
     {
-      get { return response.ContentType; }
-      set { response.ContentType = value; }
+      return _value.ToString();
     }
 
-    TextWriter IHttpResponse.Output
+    public override int GetHashCode()
     {
-      get { return new StreamWriter(response.OutputStream); }
+      return _value.GetHashCode();
     }
 
-    Stream IHttpResponse.OutputStream
+    public override bool Equals(
+      object o)
     {
-      get { return response.OutputStream; }
+      if (o == null || !(o is XmlRpcBoolean))
+        return false;
+      XmlRpcBoolean dbl = o as XmlRpcBoolean;
+      return (dbl._value == _value);
     }
 
-    bool IHttpResponse.SendChunked
+    public static bool operator ==(
+      XmlRpcBoolean xi, 
+      XmlRpcBoolean xj)
     {
-      get { return response.SendChunked; }
-      set { response.SendChunked = value; }
+      if (((object)xi) == null && ((object)xj) == null) 
+        return true;
+      else if (((object)xi) == null || ((object)xj) == null)
+        return false;
+      else
+        return xi._value == xj._value;
     }
 
-    int IHttpResponse.StatusCode
+    public static bool operator != (
+      XmlRpcBoolean xi, 
+      XmlRpcBoolean xj)
     {
-      get { return response.StatusCode; }
-      set { response.StatusCode = value; }
+      return !(xi == xj);
     }
 
-    string IHttpResponse.StatusDescription
+    public static implicit operator bool (XmlRpcBoolean x)
     {
-      get { return response.StatusDescription; }
-      set { response.StatusDescription = value; }
+      return x._value;
     }
 
-    private HttpListenerResponse response;
+    public static implicit operator XmlRpcBoolean(bool x) 
+    {
+      return new XmlRpcBoolean(x);
+    }
   }
 }
-
-#endif

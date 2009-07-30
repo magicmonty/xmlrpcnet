@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2007, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -23,64 +23,70 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#if !FX1_0
-
 namespace CookComputing.XmlRpc
 {
   using System;
-  using System.IO;
-  using System.Net;
 
-  public class XmlRpcListenerResponse : CookComputing.XmlRpc.IHttpResponse
+  public class XmlRpcDateTime 
   {
-    public XmlRpcListenerResponse(HttpListenerResponse response)
+    private DateTime _value;
+
+    public XmlRpcDateTime()
     {
-      this.response = response;
-      response.SendChunked = false;
+      this._value = new DateTime();
     }
 
-    Int64 IHttpResponse.ContentLength
+    public XmlRpcDateTime(DateTime val) 
     {
-      get { return response.ContentLength64; }
-      set { response.ContentLength64 = value; }
+      this._value = val;
     }
 
-    string IHttpResponse.ContentType
+    public override string ToString() 
     {
-      get { return response.ContentType; }
-      set { response.ContentType = value; }
+      return _value.ToString();
     }
 
-    TextWriter IHttpResponse.Output
+    public override int GetHashCode()
     {
-      get { return new StreamWriter(response.OutputStream); }
+      return _value.GetHashCode();
     }
 
-    Stream IHttpResponse.OutputStream
+    public override bool Equals(
+      object o)
     {
-      get { return response.OutputStream; }
+      if (o == null || !(o is XmlRpcDateTime))
+        return false;
+      XmlRpcDateTime dbl = o as XmlRpcDateTime;
+      return (dbl._value == _value);
     }
 
-    bool IHttpResponse.SendChunked
+    public static bool operator ==(
+      XmlRpcDateTime xi, 
+      XmlRpcDateTime xj)
     {
-      get { return response.SendChunked; }
-      set { response.SendChunked = value; }
+      if (((object)xi) == null && ((object)xj) == null) 
+        return true;
+      else if (((object)xi) == null || ((object)xj) == null)
+        return false;
+      else
+        return xi._value == xj._value;
     }
 
-    int IHttpResponse.StatusCode
+    public static bool operator != (
+      XmlRpcDateTime xi, 
+      XmlRpcDateTime xj)
     {
-      get { return response.StatusCode; }
-      set { response.StatusCode = value; }
+      return !(xi == xj);
     }
 
-    string IHttpResponse.StatusDescription
+    public static implicit operator DateTime (XmlRpcDateTime x)
     {
-      get { return response.StatusDescription; }
-      set { response.StatusDescription = value; }
+      return x._value;
     }
 
-    private HttpListenerResponse response;
+    public static implicit operator XmlRpcDateTime(DateTime x) 
+    {
+      return new XmlRpcDateTime(x);
+    }
   }
 }
-
-#endif

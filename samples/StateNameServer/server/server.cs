@@ -8,6 +8,7 @@ using CookComputing.XmlRpc;
 
 public class StateNameServer : MarshalByRefObject, IStateName
 {
+  [XmlRpcMethod("examples.getStateName")]
   public string GetStateName(int stateNumber)
   {
     if (stateNumber < 1 || stateNumber > m_stateNames.Length)
@@ -15,6 +16,7 @@ public class StateNameServer : MarshalByRefObject, IStateName
     return m_stateNames[stateNumber-1]; 
   }
 
+  [XmlRpcMethod("examples.getStateStruct")]
   public string GetStateNames(StateStructRequest request)
   {
     if (request.state1 < 1 || request.state1 > m_stateNames.Length)

@@ -239,11 +239,11 @@ namespace ntest
       public int member1;
 
       [XmlRpcMissingMapping(MappingAction.Ignore)]
-      public int? member2;
+      public XmlRpcInt member2;
 
       [XmlRpcMember("member_3")]
       [XmlRpcMissingMapping(MappingAction.Ignore)]
-      public int? member3;
+      public XmlRpcInt member3;
     }
 
     [Test]
@@ -279,6 +279,8 @@ namespace ntest
   </params>
 </methodCall>", reqstr);
 }
+
+
 
 
     struct Struct3
@@ -399,89 +401,6 @@ namespace ntest
 </methodCall>", reqstr);
     }
 
-
-    struct Struct4
-    {
-      [NonSerialized]
-      public int x;
-      public int y;
-    }
-
-    class Class4
-    {
-      [NonSerialized]
-      public int x;
-      public int y;
-    }
-
-
-    [Test]
-    public void NonSerialized()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { new Struct4() };
-      req.method = "Foo";
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-      Assert.AreEqual(
-@"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Foo</methodName>
-  <params>
-    <param>
-      <value>
-        <struct>
-          <member>
-            <name>y</name>
-            <value>
-              <i4>0</i4>
-            </value>
-          </member>
-        </struct>
-      </value>
-    </param>
-  </params>
-</methodCall>", reqstr);
-    }
-
-    [Test]
-    public void NonSerializedClass()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { new Class4() };
-      req.method = "Foo";
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-      Assert.AreEqual(
-@"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Foo</methodName>
-  <params>
-    <param>
-      <value>
-        <struct>
-          <member>
-            <name>y</name>
-            <value>
-              <i4>0</i4>
-            </value>
-          </member>
-        </struct>
-      </value>
-    </param>
-  </params>
-</methodCall>", reqstr);
-    }
-
-
     //---------------------- XmlRpcStruct ------------------------------------// 
     [Test]
     public void XmlRpcStruct()
@@ -517,12 +436,12 @@ namespace ntest
     }  
 
 
-    //---------------------- int? -------------------------------------// 
+    //---------------------- XmlRpcInt -------------------------------------// 
     [Test]
-    public void NullableInt()
+    public void XmlRpcInt()
     {
-      XmlDocument xdoc = Utils.Serialize("SerializeTest.testint?", 
-        new int?(12345), 
+      XmlDocument xdoc = Utils.Serialize("SerializeTest.testXmlRpcInt", 
+        new XmlRpcInt(12345), 
         Encoding.UTF8, MappingAction.Ignore);
       Type parsedType, parsedArrayType;
       object obj = Utils.Parse(xdoc, null, MappingAction.Error, 
@@ -535,7 +454,7 @@ namespace ntest
     public void XmlRpcBoolean()
     {
       XmlDocument xdoc = Utils.Serialize("SerializeTest.testXmlRpcBoolean", 
-        new Boolean?(true), 
+        new XmlRpcBoolean(true), 
         Encoding.UTF8, MappingAction.Ignore);
       Type parsedType, parsedArrayType;
       object obj = Utils.Parse(xdoc, null, MappingAction.Error, 
@@ -543,12 +462,12 @@ namespace ntest
       Assert.AreEqual(true, obj);
     }
 
-    //---------------------- Double? ----------------------------------// 
+    //---------------------- XmlRpcDouble ----------------------------------// 
     [Test]
-    public void NullableDouble()
+    public void XmlRpcDouble()
     {
-      XmlDocument xdoc = Utils.Serialize("SerializeTest.testDouble?", 
-        new Double?(543.21), 
+      XmlDocument xdoc = Utils.Serialize("SerializeTest.testXmlRpcDouble", 
+        new XmlRpcDouble(543.21), 
         Encoding.UTF8, MappingAction.Ignore);
       Type parsedType, parsedArrayType;
       object obj = Utils.Parse(xdoc, null, MappingAction.Error, 
@@ -557,18 +476,18 @@ namespace ntest
     }
 
     [Test]
-    public void NullableDouble_ForeignCulture()
+    public void XmlRpcDouble_ForeignCulture()
     {
       CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
       XmlDocument xdoc;
       try
       {
         Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-BE");
-        Double? xsd = new Double?(543.21);
+        XmlRpcDouble xsd = new XmlRpcDouble(543.21);
         //Console.WriteLine(xsd.ToString());
         xdoc = Utils.Serialize(
-          "SerializeTest.testDouble?_ForeignCulture", 
-          new Double?(543.21), 
+          "SerializeTest.testXmlRpcDouble_ForeignCulture", 
+          new XmlRpcDouble(543.21), 
           Encoding.UTF8, MappingAction.Ignore);
       }
       catch(Exception)
@@ -585,11 +504,11 @@ namespace ntest
       Assert.AreEqual(543.21, obj);
     }
 
-    //---------------------- DateTime? ------------------------------// 
+    //---------------------- XmlRpcDateTime ------------------------------// 
     [Test]
-    public void NullableDateTime()
+    public void XmlRpcDateTime()
     {
-      XmlDocument xdoc = Utils.Serialize("SerializeTest.testDateTime?", 
+      XmlDocument xdoc = Utils.Serialize("SerializeTest.testXmlRpcDateTime", 
         new DateTime(2002, 7, 6, 11, 25, 37), 
         Encoding.UTF8, MappingAction.Ignore);
       Type parsedType, parsedArrayType;
@@ -806,176 +725,16 @@ namespace ntest
 </methodCall>", reqstr);
     }
 
-    [Test]
-    public void UseInt()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { 1234 };
-      req.method = "Foo";
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.Indentation = 4;
-      ser.UseIntTag = true;
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-
-      Assert.AreEqual(
-        @"<?xml version=""1.0""?>
-<methodCall>
-    <methodName>Foo</methodName>
-    <params>
-        <param>
-            <value>
-                <int>1234</int>
-            </value>
-        </param>
-    </params>
-</methodCall>", reqstr);
-    }
-
-    //---------------------- struct params -----------------------------------// 
-    [XmlRpcMethod(StructParams=true)]
-    public int Foo(int x, string y, double z)
-    {
-      return 1;
-    }
-
-    [Test]
-    public void StructParams()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { 1234, "test", 10.1 };
-      req.method = "Foo";
-      req.mi = this.GetType().GetMethod("Foo");
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.Indentation = 2;
-      ser.UseIntTag = true;
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-
-      Assert.AreEqual(
-        @"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Foo</methodName>
-  <params>
-    <param>
-      <value>
-        <struct>
-          <member>
-            <name>x</name>
-            <value>
-              <int>1234</int>
-            </value>
-          </member>
-          <member>
-            <name>y</name>
-            <value>
-              <string>test</string>
-            </value>
-          </member>
-          <member>
-            <name>z</name>
-            <value>
-              <double>10.1</double>
-            </value>
-          </member>
-        </struct>
-      </value>
-    </param>
-  </params>
-</methodCall>", reqstr);
-    }
-
-    [XmlRpcMethod(StructParams = true)]
-    public int FooWithParams(int x, string y, params double[] z)
-    {
-      return 1;
-    }
-
-    [Test]
-    [ExpectedException(typeof(XmlRpcInvalidParametersException))]
-    public void StructParamsWithParams()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { 1234, "test", new double[] { 10.1 } };
-      req.method = "FooWithParams";
-      req.mi = this.GetType().GetMethod("FooWithParams");
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.Indentation = 2;
-      ser.UseIntTag = true;
-      ser.SerializeRequest(stm, req);
-    }
-
-    [Test]
-    [ExpectedException(typeof(XmlRpcInvalidParametersException))]
-    public void StructParamsTooManyParams()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { 1234, "test", 10.1, "lopol" };
-      req.method = "Foo";
-      req.mi = this.GetType().GetMethod("Foo");
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.Indentation = 2;
-      ser.UseIntTag = true;
-      ser.SerializeRequest(stm, req);
-    }
-
-
-    [XmlRpcMethod("artist.getInfo", StructParams = true)]
-    public string getInfo(string artist, string api_key)
-    {
-      return "";
-    }
-
-    [Test]
-    public void StructParamsGetInfo()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] { "Bob Dylan", "abcd1234" };
-      req.method = "artist.getInfo";
-      req.mi = this.GetType().GetMethod("getInfo");
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.Indentation = 2;
-      ser.UseIntTag = true;
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-
-      Assert.AreEqual(
-        @"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>artist.getInfo</methodName>
-  <params>
-    <param>
-      <value>
-        <struct>
-          <member>
-            <name>artist</name>
-            <value>
-              <string>Bob Dylan</string>
-            </value>
-          </member>
-          <member>
-            <name>api_key</name>
-            <value>
-              <string>abcd1234</string>
-            </value>
-          </member>
-        </struct>
-      </value>
-    </param>
-  </params>
-</methodCall>", reqstr);
-    }
   }
 }
 
+/*
+"<?xml version=\"1.0\"?>\r\n<methodCall>\r\n  <methodName>Foo</methodName>\r\n  <params>\r\n    <param>\r\n      <value>\r\n        <struct>\r\n          
+ * <member>\r\n            <name>mi</name>\r\n            <value>\r\n              <i4>34567</i4>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>ms</name>\r\n            <value>\r\n              <string>another test string</string>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>mb</name>\r\n            <value>\r\n              <boolean>1</boolean>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>md</name>\r\n            <value>\r\n              <double>8765.123</double>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>mdt</name>\r\n            <value>\r\n              <dateTime.iso8601>20020706T11:25:37</dateTime.iso8601>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>mb64</name>\r\n            <value>\r\n              <base64>eW91IGNhbid0IHJlYWQgdGhpcyE=</base64>\r\n            </value>\r\n          </member>\r\n          
+ * <member>\r\n            <name>ma</name>\r\n            <value>\r\n              <array>\r\n                <data>\r\n                  <value>\r\n                    <i4>1</i4>\r\n                  </value>\r\n                  <value>\r\n                    <i4>2</i4>\r\n                  </value>\r\n                  <value>\r\n                    <i4>3</i4>\r\n                  </value>\r\n                  <value>\r\n                    <i4>4</i4>\r\n                  </value>\r\n                  <value>\r\n                    <i4>5</i4>\r\n                  </value>\r\n                </data>\r\n              </array>\r\n            </value>\r\n          </member>\r\n        </struct>\r\n      </value>\r\n    </param>\r\n  </params>\r\n</methodCall>"
+*/

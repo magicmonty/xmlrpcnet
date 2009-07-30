@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -46,7 +46,7 @@ namespace CookComputing.XmlRpc
 
     bool IHttpResponse.SendChunked
     {
-      get { return true; }
+      get { throw new NotImplementedException(); }
       set { throw new NotImplementedException(); }
     }
 
@@ -64,6 +64,7 @@ namespace CookComputing.XmlRpc
 
     Int64 IHttpResponse.ContentLength
     {
+      get { throw new NotImplementedException(); }
       set { throw new NotImplementedException(); }
     }
 

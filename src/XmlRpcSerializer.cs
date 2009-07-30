@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -29,7 +29,6 @@ namespace CookComputing.XmlRpc
 {
   using System;
   using System.Collections;
-  using System.Collections.Generic;
   using System.Globalization;
   using System.IO;
   using System.Reflection;
@@ -130,7 +129,8 @@ namespace CookComputing.XmlRpc
 
     public void SerializeRequest(Stream stm, XmlRpcRequest request) 
     {
-      XmlWriter xtw = CreateXmlWriter(stm);
+      XmlTextWriter xtw = new XmlTextWriter(stm, m_encoding);
+      ConfigureXmlFormat(xtw);
       xtw.WriteStartDocument();
       xtw.WriteStartElement("", "methodCall", "");
     {
@@ -164,7 +164,7 @@ namespace CookComputing.XmlRpc
       xtw.Flush();
     }
 
-    void SerializeParams(XmlWriter xtw, XmlRpcRequest request,
+    void SerializeParams(XmlTextWriter xtw, XmlRpcRequest request,
       MappingAction mappingAction)
     {
       ParameterInfo[] pis = null;
@@ -206,7 +206,7 @@ namespace CookComputing.XmlRpc
       }
     }
 
-    void SerializeStructParams(XmlWriter xtw, XmlRpcRequest request,
+    void SerializeStructParams(XmlTextWriter xtw, XmlRpcRequest request,
       MappingAction mappingAction)
     {
       ParameterInfo[] pis = request.mi.GetParameters();
@@ -436,7 +436,9 @@ namespace CookComputing.XmlRpc
         SerializeFaultResponse(stm, (XmlRpcFaultException)ret);
         return;
       }
-      XmlWriter xtw = CreateXmlWriter(stm);
+
+      XmlTextWriter xtw = new XmlTextWriter(stm, m_encoding);
+      ConfigureXmlFormat(xtw);
       xtw.WriteStartDocument();
       xtw.WriteStartElement("", "methodResponse", "");
       xtw.WriteStartElement("", "params", "");
@@ -588,7 +590,7 @@ namespace CookComputing.XmlRpc
     public
       //#endif
     void Serialize(
-      XmlWriter xtw,
+      XmlTextWriter xtw,
       Object o,
       MappingAction mappingAction)
     {
@@ -599,7 +601,7 @@ namespace CookComputing.XmlRpc
     public
       //#endif
     void Serialize(
-      XmlWriter xtw,
+      XmlTextWriter xtw,
       Object o,
       MappingAction mappingAction,
       ArrayList nestedObjs)
@@ -647,7 +649,7 @@ namespace CookComputing.XmlRpc
           if (o is bool)
             boolVal = (bool)o;
           else
-            boolVal = (bool)(Boolean)o;
+            boolVal = (bool)(XmlRpcBoolean)o;
           if (boolVal)
             xtw.WriteElementString("boolean", "1");
           else
@@ -656,14 +658,21 @@ namespace CookComputing.XmlRpc
         else if (xType == XmlRpcType.tDateTime)
         {
           DateTime dt;
-          dt = (DateTime)o;
+          if (o is DateTime)
+            dt = (DateTime)o;
+          else
+            dt = (XmlRpcDateTime)o;
           string sdt = dt.ToString("yyyyMMdd'T'HH':'mm':'ss",
           DateTimeFormatInfo.InvariantInfo);
           xtw.WriteElementString("dateTime.iso8601", sdt);
         }
         else if (xType == XmlRpcType.tDouble)
         {
-          double doubleVal = (double)o;
+          double doubleVal;
+          if (o is double)
+            doubleVal = (double)o;
+          else
+            doubleVal = (XmlRpcDouble)o;
           xtw.WriteElementString("double", doubleVal.ToString(null,
           CultureInfo.InvariantCulture));
         }
@@ -780,7 +789,7 @@ namespace CookComputing.XmlRpc
     }
 
     void BuildArrayXml(
-      XmlWriter xtw,
+      XmlTextWriter xtw,
       Array ary,
       int CurRank,
       int[] indices,
@@ -1129,11 +1138,13 @@ namespace CookComputing.XmlRpc
           + XmlRpcServiceInfo.GetXmlRpcTypeString(valueType)
           + " expected " + StackDump(parseStack));
       }
+#if !FX1_0
       if (valueType.IsGenericType
         && valueType.GetGenericTypeDefinition() == typeof(Nullable<>))
       {
         valueType = valueType.GetGenericArguments()[0];
       }
+#endif
       object retObj;
       try
       {
@@ -1431,7 +1442,7 @@ namespace CookComputing.XmlRpc
             throw new XmlRpcInvalidXmlRpcException(parseStack.ParseType
               + " contains member with more than one value element"
               + " " + StackDump(parseStack));
-          if (retObj.ContainsKey(rpcName))
+          if (retObj.Contains(rpcName))
           {
             if (!IgnoreDuplicateMembers)
               throw new XmlRpcInvalidXmlRpcException(parseStack.ParseType
@@ -1471,7 +1482,10 @@ namespace CookComputing.XmlRpc
     {
       if (ValueType != null && ValueType != typeof(Object)
         && ValueType != typeof(System.Int32)
-        && ValueType != typeof(int?))
+#if !FX1_0
+ && ValueType != typeof(int?)
+#endif
+ && ValueType != typeof(XmlRpcInt))
       {
         throw new XmlRpcTypeMismatchException(parseStack.ParseType +
           " contains int value where "
@@ -1503,8 +1517,8 @@ namespace CookComputing.XmlRpc
       {
         parseStack.Pop();
       }
-      if (ValueType == typeof(int?))
-        return (int?)retVal;
+      if (ValueType == typeof(XmlRpcInt))
+        return new XmlRpcInt(retVal);
       else
         return retVal;
     }
@@ -1592,7 +1606,10 @@ namespace CookComputing.XmlRpc
     {
       if (ValueType != null && ValueType != typeof(Object)
         && ValueType != typeof(System.Boolean)
-        && ValueType != typeof(Boolean?))
+#if !FX1_0
+ && ValueType != typeof(bool?)
+#endif
+ && ValueType != typeof(XmlRpcBoolean))
       {
         throw new XmlRpcTypeMismatchException(parseStack.ParseType
           + " contains boolean value where "
@@ -1623,8 +1640,8 @@ namespace CookComputing.XmlRpc
       {
         parseStack.Pop();
       }
-      if (ValueType == typeof(Boolean?))
-        return (Boolean?)retVal;
+      if (ValueType == typeof(XmlRpcBoolean))
+        return new XmlRpcBoolean(retVal);
       else
         return retVal;
     }
@@ -1637,7 +1654,10 @@ namespace CookComputing.XmlRpc
     {
       if (ValueType != null && ValueType != typeof(Object)
         && ValueType != typeof(System.Double)
-        && ValueType != typeof(double?))
+#if !FX1_0
+ && ValueType != typeof(double?)
+#endif
+ && ValueType != typeof(XmlRpcDouble))
       {
         throw new XmlRpcTypeMismatchException(parseStack.ParseType
           + " contains double value where "
@@ -1660,8 +1680,8 @@ namespace CookComputing.XmlRpc
       {
         parseStack.Pop();
       }
-      if (ValueType == typeof(Double?))
-        return (Double?)retVal;
+      if (ValueType == typeof(XmlRpcDouble))
+        return new XmlRpcDouble(retVal);
       else
         return retVal;
     }
@@ -1674,7 +1694,10 @@ namespace CookComputing.XmlRpc
     {
       if (ValueType != null && ValueType != typeof(Object)
         && ValueType != typeof(System.DateTime)
-        && ValueType != typeof(DateTime?))
+#if !FX1_0
+ && ValueType != typeof(DateTime?)
+#endif
+ && ValueType != typeof(XmlRpcDateTime))
       {
         throw new XmlRpcTypeMismatchException(parseStack.ParseType
           + " contains dateTime.iso8601 value where "
@@ -1748,8 +1771,8 @@ namespace CookComputing.XmlRpc
       {
         parseStack.Pop();
       }
-      if (ValueType == typeof(DateTime?))
-        return (DateTime?)retVal;
+      if (ValueType == typeof(XmlRpcDateTime))
+        return new XmlRpcDateTime(retVal);
       else
         return retVal;
     }
@@ -1858,7 +1881,9 @@ namespace CookComputing.XmlRpc
       FaultStruct fs;
       fs.faultCode = faultEx.FaultCode;
       fs.faultString = faultEx.FaultString;
-      XmlWriter xtw = CreateXmlWriter(stm);
+
+      XmlTextWriter xtw = new XmlTextWriter(stm, m_encoding);
+      ConfigureXmlFormat(xtw);
       xtw.WriteStartDocument();
       xtw.WriteStartElement("", "methodResponse", "");
       xtw.WriteStartElement("", "fault", "");
@@ -1868,40 +1893,20 @@ namespace CookComputing.XmlRpc
       xtw.Flush();
     }
 
-    public class EncodingStreamWriter : StreamWriter
+    void ConfigureXmlFormat(
+      XmlTextWriter xtw)
     {
-      Encoding _encoding;
-
-      public EncodingStreamWriter(Stream stm, Encoding encoding)
-        : base(stm)
-      {
-        _encoding = encoding;
-      }
-
-      public override Encoding Encoding
-      {
-        get { return _encoding; }
-      }
-    }
-
-    XmlWriter CreateXmlWriter(Stream stm)
-    {
-      var settings = new XmlWriterSettings();
       if (m_bUseIndentation)
       {
-        settings.Indent = true;
-        settings.IndentChars = new StringBuilder().Append(' ', m_indentation).ToString();
+        xtw.Formatting = Formatting.Indented;
+        xtw.Indentation = m_indentation;
       }
       else
       {
-        settings.Indent = false;
+        xtw.Formatting = Formatting.None;
       }
-      StreamWriter wrtr;
-      wrtr = new EncodingStreamWriter(stm, m_encoding);
-      var xtw = XmlWriter.Create(wrtr, settings);
-      return xtw;
     }
-    
+
     string StackDump(ParseStack parseStack)
     {
       StringBuilder sb = new StringBuilder();
@@ -2004,11 +2009,19 @@ namespace CookComputing.XmlRpc
       return ret;
     }
 
-    public class ParseStack : Stack<string>
+    //#if (DEBUG)
+    public
+      //#endif
+    class ParseStack : Stack
     {
       public ParseStack(string parseType)
       {
         m_parseType = parseType;
+      }
+
+      void Push(string str)
+      {
+        base.Push(str);
       }
 
       public string ParseType

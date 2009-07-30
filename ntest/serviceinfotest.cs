@@ -19,7 +19,7 @@ namespace ntest
       string rpcString = XmlRpcServiceInfo.GetXmlRpcTypeString(type);
       Assert.AreEqual(rpcString, "integer", "Int32 doesn't map to 'integer'");
     }
-    
+
     [Test]
     public void Int64()
     {
@@ -34,7 +34,7 @@ namespace ntest
     [Test]
     public void XmlRpcInt()
     {
-      Type type = typeof(int?);
+      Type type = typeof(XmlRpcInt);
       XmlRpcType rpcType = XmlRpcServiceInfo.GetXmlRpcType(type);
       Assert.AreEqual(XmlRpcType.tInt32, rpcType, 
         "XmlRpcInt doesn't map to XmlRpcType.tInt32");
@@ -58,7 +58,7 @@ namespace ntest
     [Test]
     public void XmlRpcBoolean()
     {
-      Type type = typeof(Boolean?);
+      Type type = typeof(XmlRpcBoolean);
       XmlRpcType rpcType = XmlRpcServiceInfo.GetXmlRpcType(type);
       Assert.AreEqual(XmlRpcType.tBoolean, rpcType,
         "XmlRpcBoolean doesn't map to XmlRpcType.tBoolean");
@@ -92,7 +92,7 @@ namespace ntest
     [Test]
     public void XmlRpcDouble()
     {
-      Type type = typeof(Double?);
+      Type type = typeof(XmlRpcDouble);
       XmlRpcType rpcType = XmlRpcServiceInfo.GetXmlRpcType(type);
       Assert.AreEqual(XmlRpcType.tDouble, rpcType, 
         "XmlRpcDouble doesn't map to XmlRpcType.tDouble");
@@ -116,7 +116,7 @@ namespace ntest
     [Test]
     public void XmlRpcDateTime()
     {
-      Type type = typeof(DateTime?);
+      Type type = typeof(XmlRpcDateTime);
       XmlRpcType rpcType = XmlRpcServiceInfo.GetXmlRpcType(type);
       Assert.AreEqual(XmlRpcType.tDateTime, rpcType,
         "XmlRpcDateTime doesn't map to XmlRpcType.tDateTime");
@@ -264,6 +264,7 @@ namespace ntest
         "GetXmlRpcType return DBNull as tInvalid");
     }
 
+#if !FX1_0
     [Test]
     public void NullableInt()
     {
@@ -340,6 +341,7 @@ namespace ntest
       Assert.AreEqual(rpcString, "struct",
         "TestStruct? doesn't map to 'struct'");
     }
+#endif
 
     [Test]
     public void DerivedInterfaces()

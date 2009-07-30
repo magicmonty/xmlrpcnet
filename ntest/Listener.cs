@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading;
 using CookComputing.XmlRpc;
 
+#if !FX1_0
+
 namespace ntest
 {
   class Listener
@@ -12,10 +14,10 @@ namespace ntest
     bool _running = false;
     HttpListener _lstner = new HttpListener();
 
-    public Listener(XmlRpcListenerService svc, string uri)
+    public Listener(XmlRpcListenerService svc)
     {
       _svc = svc;
-      _lstner.Prefixes.Add(uri);
+      _lstner.Prefixes.Add("http://127.0.0.1:11000/");
     }
 
     public void Start()
@@ -51,3 +53,5 @@ namespace ntest
     }
   }
 }
+
+#endif

@@ -1,7 +1,7 @@
 
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2007, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -24,6 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#if !FX1_0
+
 namespace CookComputing.XmlRpc
 {
   using System;
@@ -41,16 +43,13 @@ namespace CookComputing.XmlRpc
         IHttpResponse resp = new XmlRpcListenerResponse(RequestContext.Response);
         resp.SendChunked = _sendChunked;
         HandleHttpRequest(req, resp);
+        RequestContext.Response.OutputStream.Close();
       }
       catch (Exception ex)
       {
         // "Internal server error"
         RequestContext.Response.StatusCode = 500;
         RequestContext.Response.StatusDescription = ex.Message;
-      }
-      finally
-      {
-        RequestContext.Response.OutputStream.Close();
       }
     }
 
@@ -61,3 +60,5 @@ namespace CookComputing.XmlRpc
     }
   }
 }
+
+#endif

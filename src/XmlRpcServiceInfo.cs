@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 namespace CookComputing.XmlRpc
 {
   using System;
-  using System.Collections.Generic;
+  using System.Collections;
   using System.Reflection;
   using System.Text.RegularExpressions;
 
@@ -61,7 +61,7 @@ namespace CookComputing.XmlRpc
       else
         svcInfo.Name = type.Name;
       // extract method info
-      var methods = new Dictionary<string, XmlRpcMethodInfo>();
+      Hashtable methods = new Hashtable();
 
       foreach (Type itf in type.GetInterfaces())
       {
@@ -85,7 +85,7 @@ namespace CookComputing.XmlRpc
 
       foreach (MethodInfo mi in type.GetMethods())
       {
-        var mthds = new List<MethodInfo>();
+        ArrayList mthds = new ArrayList();
         mthds.Add(mi);
         MethodInfo curMi = mi;
         while (true)
@@ -107,8 +107,7 @@ namespace CookComputing.XmlRpc
       return svcInfo;
     }
 
-    static void ExtractMethodInfo(Dictionary<string, XmlRpcMethodInfo> methods, 
-      MethodInfo mi, Type type)
+    static void ExtractMethodInfo(Hashtable methods, MethodInfo mi, Type type)
     {
       XmlRpcMethodAttribute attr = (XmlRpcMethodAttribute)
         Attribute.GetCustomAttribute(mi,
@@ -122,7 +121,7 @@ namespace CookComputing.XmlRpc
       mthdInfo.Doc = attr.Description;
       mthdInfo.IsHidden = attr.IntrospectionMethod | attr.Hidden;
       // extract parameters information
-      var parmList = new List<XmlRpcParameterInfo>();
+      ArrayList parmList = new ArrayList();
       ParameterInfo[] parms = mi.GetParameters();
       foreach (ParameterInfo parm in parms)
       {
@@ -144,7 +143,8 @@ namespace CookComputing.XmlRpc
           typeof(ParamArrayAttribute));
         parmList.Add(parmInfo);
       }
-      mthdInfo.Parameters = parmList.ToArray();
+      mthdInfo.Parameters = (XmlRpcParameterInfo[])
+        parmList.ToArray(typeof(XmlRpcParameterInfo));
       // extract return type information
       mthdInfo.ReturnType = mi.ReturnType;
       mthdInfo.ReturnXmlRpcType = GetXmlRpcTypeString(mi.ReturnType);
@@ -155,7 +155,7 @@ namespace CookComputing.XmlRpc
         mthdInfo.ReturnDoc = ((XmlRpcReturnValueAttribute)orattrs[0]).Description;
       }
 
-      if (methods.ContainsKey(mthdInfo.XmlRpcName))
+      if (methods[mthdInfo.XmlRpcName] != null)
       {
         throw new XmlRpcDupXmlRpcMethodNames(String.Format("Method "
           + "{0} in type {1} has duplicate XmlRpc method name {2}",
@@ -254,21 +254,21 @@ namespace CookComputing.XmlRpc
       XmlRpcType ret;
       if (t == typeof(Int32))
         ret = XmlRpcType.tInt32;
-      else if (t == typeof(int?))
+      else if (t == typeof(XmlRpcInt))
         ret = XmlRpcType.tInt32;
       else if (t == typeof(Boolean))
         ret = XmlRpcType.tBoolean;
-      else if (t == typeof(Boolean?))
+      else if (t == typeof(XmlRpcBoolean))
         ret = XmlRpcType.tBoolean;
       else if (t == typeof(String))
         ret = XmlRpcType.tString;
       else if (t == typeof(Double))
         ret = XmlRpcType.tDouble;
-      else if (t == typeof(Double?))
+      else if (t == typeof(XmlRpcDouble))
         ret = XmlRpcType.tDouble;
       else if (t == typeof(DateTime))
         ret = XmlRpcType.tDateTime;
-      else if (t == typeof(DateTime?))
+      else if (t == typeof(XmlRpcDateTime))
         ret = XmlRpcType.tDateTime;
       else if (t == typeof(byte[]))
         ret = XmlRpcType.tBase64;
@@ -325,6 +325,7 @@ namespace CookComputing.XmlRpc
 #endif
 
       }
+#if !FX1_0
       else if (t == typeof(int?))
         ret = XmlRpcType.tInt32;
       else if (t == typeof(Boolean?))
@@ -333,6 +334,7 @@ namespace CookComputing.XmlRpc
         ret = XmlRpcType.tDouble;
       else if (t == typeof(DateTime?))
         ret = XmlRpcType.tDateTime;
+#endif
       else if (t == typeof(void))
       {
         ret = XmlRpcType.tVoid;

@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -82,24 +82,9 @@ namespace CookComputing.XmlRpc
       IHttpResponse httpResp,
       bool autoDocVersion)
     {
-      using (MemoryStream stm = new MemoryStream())
-      {
-        using (HtmlTextWriter wrtr = new HtmlTextWriter(new StreamWriter(stm)))
-        {
-          XmlRpcDocWriter.WriteDoc(wrtr, this.GetType(), autoDocVersion);
-          wrtr.Flush();
-          httpResp.ContentType = "text/html";
-          if (!httpResp.SendChunked)
-          {
-            httpResp.ContentLength = stm.Length;
-          }
-          stm.Position = 0;
-          Stream respStm = httpResp.OutputStream;
-          Util.CopyStream(stm, respStm);
-          respStm.Flush();
-          httpResp.StatusCode = 200;
-        }
-      }
+      HtmlTextWriter wrtr = new HtmlTextWriter(httpResp.Output);
+      XmlRpcDocWriter.WriteDoc(wrtr, this.GetType(), autoDocVersion);
+      httpResp.StatusCode = 200;
     }
 
     protected void HandleUnsupportedMethod(

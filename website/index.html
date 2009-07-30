@@ -13,28 +13,39 @@
 
 <div id="googlead">
 <script type="text/javascript"><!--
-google_ad_client = "pub-1318882515896843";
-/* XML-RPC.NET */
-google_ad_slot = "2262415944";
+google_ad_client = "pub-3136777794181980";
+google_alternate_color = "E6E6E6";
 google_ad_width = 120;
 google_ad_height = 600;
-//-->
-</script>
+google_ad_format = "120x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "336699";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
 <script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 
 <div id="googlink" >
 <script type="text/javascript"><!--
-google_ad_client = "pub-1318882515896843";
-/* XML-RPC.NET Links */
-google_ad_slot = "0494440579";
+google_ad_client = "pub-3136777794181980";
+google_alternate_color = "E6E6E6";
 google_ad_width = 120;
 google_ad_height = 90;
-//-->
-</script>
+google_ad_format = "120x90_0ads_al_s";
+google_ad_channel ="";
+google_color_border = "336699";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
 <script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 </div>
 
@@ -45,102 +56,99 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
     <a href="faq/xmlrpcnetfaq.html">Documentation</a>
     &nbsp;
     <a href="http://www.cookcomputing.com">Cook Computing</a>
-<br />
-<br />
-<br />
-<br />
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="4630719">
-<input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
-<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-</form>
 </div>
 
 <h1>XML-RPC.NET</h1>
 
 <h2>Latest News</h2>
 
-<h3>19th December 2008</h3>
-<p>Version 2.4.0 has been released:
-<a href="http://xmlrpcnet.googlecode.com/files/xml-rpc.net.2.4.0.zip">xml-rpc.net.2.4.0.zip</a> 
-
+<h3>30th April 2008</h3>
+<p>Version 2.3.2 has been released:
+<a href="http://xmlrpcnet.googlecode.com/files/xml-rpc.net.2.3.2.zip">xml-rpc.net.2.3.2.zip</a> 
 </p>
 
-<p>New feature and fixed issues:</p>
+<p>Changes:</p>
 
 <ul>
 
 <li>
-New StructParams property on XmlRpcMethodAttribute which provides supports for APIs which
-use a struct to provide named parameters to a method call. 
-(<a href="./faq/xmlrpcnetfaq.html#2.34">more</a>).
+Issue 22: XmlRpcTypeMismatchException thrown if an XML-RPC array is mistakenly 
+mapped onto a .Net struct (was throwing MissingMethodException).
 </li>
 
 <li>
-NonSerialized attribute can be applied to struct members to prevent 
-them being serialized and deserialized.
-(<a href="./faq/xmlrpcnetfaq.html#2.35">more</a>).
+Issue 23: Fixes problem where XML-RPC string values containing just one or 
+more spaces were deserialized as an empty .Net string value.
 </li>
 
+<li>
+Issue 24: XmlRpcV2 assembly is now built with a strong name.
+</li>
 
-<li> Fixed issues:
+</ul>
+
+<h3>14th April 2008</h3>
+<p>Version 2.3.1 has been released:
+<a href="http://xmlrpcnet.googlecode.com/files/xml-rpc.net.2.3.1.zip">xml-rpc.net.2.3.1.zip</a> 
+</p>
+
+<p>Changes:</p>
 
 <ul>
 
 <li>
-Issue 25: NullReferenceException when struct member name is an empty string. 
-Now throws XmlRpcInvalidXmlRpcException.
+Issue 20: Fixes problem where XML-RPC service implemented as HttpHandler
+returns 500 server error. 
 </li>
 
 <li>
-Issue 26: Auto-Documentation does not work with HttpListener.
+Issue 21: Fixes problem with StateNameServer sample which returns fault response 
+because of duplicate XML-RPC method names.
 </li>
 
-<li>
-Issue 27: XmlRpcListenerService.ProcessRequest may not close stream in case of exception.
-</li>
-
-<li>
-Issue 28: XmlRpcSerializer.GetStructName does not check for Properties.
-</li>
-
-<li>
-Issue 31: UseIntTag is being ignored.
-</li>
-
-<li>
-Issue 32: XmlRpcClientProtocol problem with response from void method.
-</li>
-
-<li>
-Issue 34: XmlRpcServerProtocol should be derived from MarshalByRefObject. 
-The system.* methods do not work with remoting object.
-</li>
-
-<li>
-Issue 35: UseEmptyParamsTag property on the proxy doesn’t work unless you are making asynchronous calls.
-</li>
-
-<li>
-Issue 36: Fixed SelectSingleNode and using statement in 
-XmlRpcFaultException for Compact Framework version.
-</li>
-
-<li>
-Issue 38: Check of ParamArrayAttribute causes crash under Mono/Linux.
-</li>
-
-<li>
-Issue 40: Deserialization performance enhancement.
-</li>
 </ul>
 
+<h3>4th April 2008</h3>
+<p>Version 2.3.0 has been released:
+<a href="http://xmlrpcnet.googlecode.com/files/xml-rpc.net.2.3.0.zip">xml-rpc.net.2.3.0.zip</a> 
+</p>
+
+<p>New features and changes:</p>
+
+<ul>
+
+<li>
+Issue 15: Support for accessing response headers and cookies. 
+(<a href="./faq/xmlrpcnetfaq.html#2.33">more</a>). 
 </li>
 
+<li>
+Issue 17: Support for not sending a params element if no method parameters. 
+(<a href="./faq/xmlrpcnetfaq.html#2.32">more</a>). 
+</li>
 
+<li>
+Changes:
+<ul>
+<li>
+Issue 16: Content type set before writing to response stream (fixes Mono issue).
+</li>
+<li>
+Issue 18: Modified proxy code generation so that it verifies - prevents 
+“Operation could destabilize the runtime" problem.
+</li>
+<li>
+Issue 19: XmlRpcListenerService now sets Content Length header and does not
+use chunked content by default.
+</li>
 
 </ul>
+</li>
+
+</ul>  
+
+
+<h3>4th December 2007</h3>
 
 <p>
 Note: if you use the built-in compressed folders feature of Windows 
@@ -148,7 +156,6 @@ Explorer in Windows XP to extract file from the distribution,
 you may find that the contents of the bin directories are not visible. 
 Use a utility such as WinZip instead.
 </p>
-
 
 <h2>Overview</h2>
 <p>
@@ -392,7 +399,7 @@ document.write('<a href="mailto:' + '&#99;&#104;&#97;&#115;' +'&#99;&#111;&#111;
 
 <p>&nbsp;</p>
 <p style="font-size: x-small;">
-Charles Cook, 2001-2009 All Rights Reserved. 10th April 2009
+Charles Cook, 2001-2008 All Rights Reserved. 30th April 2008
 </p>
 
 </div>

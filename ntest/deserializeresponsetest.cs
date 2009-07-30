@@ -1397,20 +1397,5 @@ This should be ignored.
       XmlRpcResponse response = serializer.DeserializeResponse(sr1,
         typeof(Category[]));
     }
-
-    [Test]
-    public void EmptyParamsVoidReturn()
-    {
-      string xml = @"<?xml version=""1.0""?>
-<methodResponse>
-  <params/>
-</methodResponse>
-";
-      StringReader sr1 = new StringReader(xml);
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      XmlRpcResponse response = serializer.DeserializeResponse(sr1,
-        typeof(void));
-      Assert.IsNull(response.retVal);
-    }
   }
 }

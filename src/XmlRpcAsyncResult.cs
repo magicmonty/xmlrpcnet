@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -74,26 +74,6 @@ namespace CookComputing.XmlRpc
       get { return isCompleted; } 
     }
 
-#if (!COMPACT_FRAMEWORK && !SILVERLIGHT)
-    public CookieCollection ResponseCookies
-    {
-      get { return _responseCookies; }
-    }
-#endif
-
-#if (!COMPACT_FRAMEWORK)
-    public WebHeaderCollection ResponseHeaders
-    {
-      get { return _responseHeaders; }
-    }
-#endif
-
-
-    public bool UseEmptyParamsTag
-    {
-      get { return _useEmptyParamsTag; }
-    }
-
     public bool UseIndentation 
     {
       get { return _useIndentation; } 
@@ -136,7 +116,6 @@ namespace CookComputing.XmlRpc
       XmlRpcClientProtocol ClientProtocol, 
       XmlRpcRequest XmlRpcReq, 
       Encoding XmlEncoding,
-      bool useEmptyParamsTag,
       bool useIndentation,
       int indentation,
       bool UseIntTag,
@@ -153,7 +132,6 @@ namespace CookComputing.XmlRpc
       userCallback = UserCallback;
       completedSynchronously = true;
       xmlEncoding = XmlEncoding;
-      _useEmptyParamsTag = useEmptyParamsTag;
       _useIndentation = useIndentation;
       _indentation = indentation;
       _useIntTag = UseIntTag;
@@ -267,16 +245,9 @@ namespace CookComputing.XmlRpc
     byte[] buffer;
     XmlRpcRequest xmlRpcRequest;
     Encoding xmlEncoding;
-    bool _useEmptyParamsTag;
     bool _useIndentation;
     int _indentation;
     bool _useIntTag;
     bool _useStringTag;
-#if (!COMPACT_FRAMEWORK && !SILVERLIGHT)
-    internal CookieCollection _responseCookies;
-#endif
-#if (!COMPACT_FRAMEWORK)
-    internal WebHeaderCollection _responseHeaders;
-#endif
   }
 }

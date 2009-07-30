@@ -13,28 +13,39 @@
 
 <div id="googlead">
 <script type="text/javascript"><!--
-google_ad_client = "pub-1318882515896843";
-/* XML-RPC.NET */
-google_ad_slot = "2262415944";
+google_ad_client = "pub-3136777794181980";
+google_alternate_color = "E6E6E6";
 google_ad_width = 120;
 google_ad_height = 600;
-//-->
-</script>
+google_ad_format = "120x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "336699";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
 <script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 
 <div id="googlink" >
 <script type="text/javascript"><!--
-google_ad_client = "pub-1318882515896843";
-/* XML-RPC.NET Links */
-google_ad_slot = "0494440579";
+google_ad_client = "pub-3136777794181980";
+google_alternate_color = "E6E6E6";
 google_ad_width = 120;
 google_ad_height = 90;
-//-->
-</script>
+google_ad_format = "120x90_0ads_al_s";
+google_ad_channel ="";
+google_color_border = "336699";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></script>
 <script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 </div>
 
@@ -49,7 +60,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 <h1>XML-RPC.NET FAQ</h1>
 
-<p>8th February 2009. &copy; Charles Cook, 2002-2009.</p>
+<p>19th July 2007. &copy; Charles Cook, 2002-2007.</p>
 <p>Please send feedback, corrections, etc, to xmlrpcfaq@gmail.com.</p>
 <h2>Contents</h2>
 <p>1. Introduction</p>
@@ -111,10 +122,6 @@ if the XML-RPC method name is not valid in my programming language?<br/>
 2.29 <a href="#2.29">How do I implement a client in Boo?</a> <br />
 2.30 <a href="#2.30">Can I configure the client to not use the &lt;string&gt; tag?</a><br />
 2.31 <a href="#2.31">How do I configure client support for Accept-Encoding?</a><br />
-2.32 <a href="#2.32">How do I prevent an empty params element in a request?</a><br />
-2.33 <a href="#2.33">Can I retrieve the HTML response headers and cookies?</a><br />
-2.34 <a href="#2.34">How do I call an XML-RPC method which requires named parameters in a struct?</a><br />
-2.35 <a href="#2.35">Can I use the NonSerialized attribute on struct members?</a><br />
 
 </p>
 
@@ -237,7 +244,7 @@ page</a>.
 
 <p>
 Updates are announced at <a href="http://www.cookcomputing.com/">Cook Computing</a> 
-and the Yahoo <a href="http://tech.groups.yahoo.com/group/XMLRPCNET/">XMLRPCNET</a> group.
+and the Yahoo <a href="http://groups.yahoo.com/XMLRPCNET/">XMLRPCNET</a> group.
 </p>
 
 
@@ -371,7 +378,7 @@ set of members created at runtime.
 
 <p>
 For cases where the members of the struct are fixed, the XML-RPC struct can 
-be mapped onto a .NET struct or class, for example:
+be mapped onto a .NET struct, for example:
 </p>
 
 <pre>&lt;struct&gt;
@@ -395,25 +402,14 @@ could map onto this C# struct:<br/>
 }</pre>
 
 <p>
-or this C# class:
-</p>
-
-<pre>class errClass<br/>{
-  public int code;
-  public string description;
-}</pre>
-
-<p>
-When mapping from an XML-RPC struct to a .NET struct or class, XML-RPC.NET ignores any 
+When mapping from an XML-RPC struct to a .NET struct, XML-RPC.NET ignores any 
 members which are only in the XML-RPC struct, but throws an exception if a member 
-is defined in the .NET type but is not in the XML-RPC struct (although it is possible
-to specify that members are optional, see question <a href="#1.15">1.15</a>)
+is defined in the .NET struct but is not in the XML-RPC struct.
 </p>
 
 <p>
-When mapping from a .NET struct or class to an XML-RPC struct, XML-RPC.NET simply maps 
-every member of the .NET type to the XML-RPC struct (except where the NonSerializable 
-attribute is used, see question <a href="#2.35">2.35</a>).
+When mapping from a .NET struct to an XML-RPC struct, XML-RPC.NET simply maps 
+every member of the .NET struct to the XML-RPC struct.
 </p>
 
 <p>In cases where the usage of the struct in the XML-RPC call is too flexible 
@@ -508,7 +504,7 @@ To take the C# case, the correct version of the struct would be:
 <h3><a id="1.15"></a>1.15 Can I specify struct members as optional?</h3>
 
 <p>
-By default when XML-RPC.NET deserializes XML-RPC structs to .NET structs or classes it 
+By default when XML-RPC.NET deserializes XML-RPC structs to .NET structs it 
 assumes that former will contain members for all the public members defined in 
 the latter (deserialization occurs when the server processes a request and when
 the client processes a response).
@@ -1147,7 +1143,7 @@ being the interface on an instance of the System.Net.WebProxy class. For example
 
 <pre>ISumAndDiff proxy = (ISumAndDiff)XmlRpcProxyGen.Create(typeof(ISumAndDiff));
 proxy.Proxy = new WebProxy(&quot;http://proxyserver:8000&quot;);    
-SumAndDiffValue ret = proxy.SumAndDifference(2, 3); </pre>
+SumAndDiffValue ret = xmlRpcProxy.SumAndDifference(2, 3); </pre>
 
 <p>The second method is to set a global default proxy for all requests by using 
 the System.Net.GlobalProxySelection class:
@@ -1604,146 +1600,12 @@ HTTP Accept-Encoding</a> header:
 </p>
 
 <pre>ISumAndDiff proxy = XmlRpcProxyGen.Create&lt;ISumAndDiff&gt;();
-proxy.EnableCompression = true;
+proxy..EnableCompression = true;
 </pre>
 
 <p>
 The content-codings <b>compress</b> and <b>gzip</b> are supported.
 </p>
-
-<h3><a id="2.32"></a>2.32 How do I prevent an empty params element in a request?</h3>
-<p>
-The XML-RPC spec is unclear about what should be sent in a request if the 
-method call does not take any parameters. By default XML-RPC.NET sends an empty
-params element:
-</p>
-
-<pre>&lt;?xml version=""1.0""?&gt;
-&lt;methodCall&gt;
-  &lt;methodName&gt;Foo&lt;/methodName&gt;
-  &lt;params /&gt;
-&lt;/methodCall&gt;
-</pre>
-
-<p>
-However, some servers expect the params element not to be sent if there are no
-parameters:
-</p>
-
-<pre>&lt;?xml version=""1.0""?&gt;
-&lt;methodCall&gt;
-  &lt;methodName&gt;Foo&lt;/methodName&gt;
-&lt;/methodCall&gt;
-</pre>
-
-<p>
-To support these servers, set the UseEmptyParamsTag property of IXmlRpcProxy 
-to false (the default is true):
-</p>
-
-<pre>ISumAndDiff proxy = XmlRpcProxyGen.Create&lt;ISumAndDiff&gt;();
-proxy.UseEmptyParamsTag = false;
-</pre>
-
-
-<h3><a id="2.33"></a>2.33 Can I retrieve the HTML response headers and cookies?</h3>
-<p>
-To retrieve the HTML response headers and cookies, use the ResponseHeaders and 
-ResponseCookies properties of IXmlRpcProxy. For example, assuming the proxy 
-interface ISumAndDiff is derived from IXmlRpcProxy (which is recommended):
-</p>
-
-<pre>ISumAndDiff proxy = XmlRpcProxyGen.Create&lt;ISumAndDiff&gt;();
-SumAndDiffValue ret = proxy.SumAndDifference(2, 3);
-WebHeaderCollection headers = proxy.ResponseHeaders;
-CookieCollection cookies = proxy.ResponseCookies; 
-</pre>
-
-<p>
-The response headers and cookies retrieved are those associated with the last 
-call made by the proxy. When making an asynchronous call the headers and 
-cookies can be retrieved as follows:
-</p>
-
-<pre>Result ret = theProxy.EndSumAndDifference(asr); 
-WebHeaderCollection headers = ((XmlRpcAsyncResult)iasr).ResponseHeaders;
-CookieCollection cookies = ((XmlRpcAsyncResult)iasr).ResponseCookies;
-</pre>
-
-
-<h3><a id="2.34"></a>2.34 How do I call an XML-RPC method which requires named parameters in a struct?</h3>
-<p>
-Some XML-RPC APIs use a struct as a single parameter to methods, so that the 
-members of the struct acts as named parameters to the method. For example,
-the <a href="http://www.last.fm/api">Last.fm API</a> has a method called
-"artist.getInfo" which has two named parameters, "artist" and "api_key". 
-The XML-RPC request XML for this method looks like this example:
-</p>
-<pre>&lt;?xml version=""1.0""?&gt;
-&lt;methodCall&gt;
-  &lt;methodName&gt;artist.getInfo&lt;/methodName&gt;
-  &lt;params&gt;
-    &lt;param&gt;
-      &lt;value&gt;
-        &lt;struct&gt;
-          &lt;member&gt;
-            &lt;name&gt;artist&lt;/name&gt;
-            &lt;value&gt;
-              &lt;string&gt;Bob Dylan&lt;/string&gt;
-            &lt;/value&gt;
-          &lt;/member&gt;
-          &lt;member&gt;
-            &lt;name&gt;api_key&lt;/name&gt;
-            &lt;value&gt;
-              &lt;string&gt;abcd1234&lt;/string&gt;
-            &lt;/value&gt;
-          &lt;/member&gt;
-        &lt;/struct&gt;
-      &lt;/value&gt;
-    &lt;/param&gt;
-  &lt;/params&gt;
-&lt;/methodCall&gt;
-</pre>
-
-<p>
-This could be implemented in XML-RPC.NET by using a struct 
-parameter but the StructParams attribute allows the method to 
-be defined using multiple parameters which are automatically
-mapped to an XML-RPC struct at runtime, the names of the method
-parameters in the interface definition being used as the
-names of the members in the XML-RPC struct. For example, 
-"artist.getInfo" could be defined like this: 
-</p>
-
-<pre>
-public interface ILastFM : IXmlRpcProxy
-{ 
-    // ...
-
-    [XmlRpcMethod("artist.getInfo", StructParams = true)]
-    public string getInfo(string artist, string api_key);
-
-    // ...
-}
-</pre>
-
-
-<h3><a id="2.35"></a>2.35 Can I use the NonSerialized attribute on struct members?</h3>
-<p>
-Yes, the System.NonSerialized attribute can be used to prevent a struct member 
-being serialized or deserialized. For example instances of the following struct will
-only have the member "x" serialized into the XML-RPC struct:
-</p>
-
-<pre>struct MyStruct
-{
-  public int x;
-  [NonSerialized]
-  public int y;
-}    
-</pre>
-
-
 
 <h2>3. Servers</h2>
 
@@ -2212,7 +2074,7 @@ class _
     while (true)
     {
       HttpListenerContext context = listener.GetContext();
-      XmlRpcListenerService svc = new StateNameService();
+      ListenerService svc = new StateNameService();
       svc.ProcessRequest(context);
     }
   }
@@ -3055,7 +2917,7 @@ a variety of languages.
 <h3><a id="7.6"></a>7.6 Sample Services</h3>
 
 <p>
-The <a href="http://www.xml-rpc.net/demos/xmlrpcdemos.html">XML-RPC.NET Demos</a> page contains links to some XML-RPC services implemented using
+The <a href="http://www.xml-rpc.net/doc/xmlrpcdemos.html">XML-RPC.NET Demos</a> page contains links to some XML-RPC services implemented using
 XML-RPC.NET.
 </p>
 

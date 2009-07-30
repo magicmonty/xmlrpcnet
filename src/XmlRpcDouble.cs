@@ -23,39 +23,69 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System;
-using System.IO;
-
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcHttpResponse : CookComputing.XmlRpc.IHttpResponse
+  public class XmlRpcDouble 
   {
-    public XmlRpcHttpResponse(System.Web.HttpResponse response)
+    private double _value;
+
+    public XmlRpcDouble()
     {
-      m_resp = response;
+      this._value = 0;
     }
 
-    string IHttpResponse.ContentType 
-    { 
-      get { return m_resp.ContentType; } 
-      set { m_resp.ContentType = value; } 
-    }
-    TextWriter IHttpResponse.Output { get { return m_resp.Output; } }
-
-    Stream IHttpResponse.OutputStream { get { return m_resp.OutputStream; } }
-
-    int IHttpResponse.StatusCode 
-    { 
-      get { return m_resp.StatusCode; } 
-      set { m_resp.StatusCode = value; } 
+    public XmlRpcDouble(
+      double val) 
+    {
+      this._value = val;
     }
 
-    string IHttpResponse.StatusDescription 
-    { 
-      get { return m_resp.StatusDescription; } 
-      set { m_resp.StatusDescription = value; } 
+    public override string ToString() 
+    {
+      return _value.ToString();
     }
 
-    private System.Web.HttpResponse m_resp;
+    public override int GetHashCode()
+    {
+      return _value.GetHashCode();
+    }
+
+    public override bool Equals(
+      object o)
+    {
+      if (o == null || !(o is XmlRpcDouble))
+        return false;
+      XmlRpcDouble dbl = o as XmlRpcDouble;
+      return dbl._value == _value;
+    }
+
+    public static bool operator ==(
+      XmlRpcDouble xi, 
+      XmlRpcDouble xj)
+    {
+      if (((object)xi) == null && ((object)xj) == null) 
+        return true;
+      else if (((object)xi) == null || ((object)xj) == null)
+        return false;
+      else
+        return xi._value == xj._value;
+    }
+
+    public static bool operator != (
+      XmlRpcDouble xi, 
+      XmlRpcDouble xj)
+    {
+      return !(xi == xj);
+    }
+
+    public static implicit operator double (XmlRpcDouble x)
+    {
+      return x._value;
+    }
+
+    public static implicit operator XmlRpcDouble(double x) 
+    {
+      return new XmlRpcDouble(x);
+    }
   }
 }

@@ -23,39 +23,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System;
-using System.IO;
-
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcHttpResponse : CookComputing.XmlRpc.IHttpResponse
+  public class XmlRpcBoolean 
   {
-    public XmlRpcHttpResponse(System.Web.HttpResponse response)
+    private bool _value;
+
+    public XmlRpcBoolean()
     {
-      m_resp = response;
     }
 
-    string IHttpResponse.ContentType 
-    { 
-      get { return m_resp.ContentType; } 
-      set { m_resp.ContentType = value; } 
-    }
-    TextWriter IHttpResponse.Output { get { return m_resp.Output; } }
-
-    Stream IHttpResponse.OutputStream { get { return m_resp.OutputStream; } }
-
-    int IHttpResponse.StatusCode 
-    { 
-      get { return m_resp.StatusCode; } 
-      set { m_resp.StatusCode = value; } 
+    public XmlRpcBoolean(bool val) 
+    {
+      this._value = val;
     }
 
-    string IHttpResponse.StatusDescription 
-    { 
-      get { return m_resp.StatusDescription; } 
-      set { m_resp.StatusDescription = value; } 
+    public override string ToString() 
+    {
+      return _value.ToString();
     }
 
-    private System.Web.HttpResponse m_resp;
+    public override int GetHashCode()
+    {
+      return _value.GetHashCode();
+    }
+
+    public override bool Equals(
+      object o)
+    {
+      if (o == null || !(o is XmlRpcBoolean))
+        return false;
+      XmlRpcBoolean dbl = o as XmlRpcBoolean;
+      return (dbl._value == _value);
+    }
+
+    public static bool operator ==(
+      XmlRpcBoolean xi, 
+      XmlRpcBoolean xj)
+    {
+      if (((object)xi) == null && ((object)xj) == null) 
+        return true;
+      else if (((object)xi) == null || ((object)xj) == null)
+        return false;
+      else
+        return xi._value == xj._value;
+    }
+
+    public static bool operator != (
+      XmlRpcBoolean xi, 
+      XmlRpcBoolean xj)
+    {
+      return !(xi == xj);
+    }
+
+    public static implicit operator bool (XmlRpcBoolean x)
+    {
+      return x._value;
+    }
+
+    public static implicit operator XmlRpcBoolean(bool x) 
+    {
+      return new XmlRpcBoolean(x);
+    }
   }
 }

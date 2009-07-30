@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2007, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#if !FX1_0
+
 namespace CookComputing.XmlRpc
 {
   using System;
@@ -34,12 +36,6 @@ namespace CookComputing.XmlRpc
     public XmlRpcListenerResponse(HttpListenerResponse response)
     {
       this.response = response;
-      response.SendChunked = false;
-    }
-
-    Int64 IHttpResponse.ContentLength
-    {
-      set { response.ContentLength64 = value; }
     }
 
     string IHttpResponse.ContentType
@@ -58,12 +54,6 @@ namespace CookComputing.XmlRpc
       get { return response.OutputStream; }
     }
 
-    bool IHttpResponse.SendChunked
-    {
-      get { return response.SendChunked; }
-      set { response.SendChunked = value; }
-    }
-
     int IHttpResponse.StatusCode
     {
       get { return response.StatusCode; }
@@ -79,3 +69,5 @@ namespace CookComputing.XmlRpc
     private HttpListenerResponse response;
   }
 }
+
+#endif

@@ -4,11 +4,9 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading;
-using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 using CookComputing.XmlRpc;
-using System.Security.Permissions;
 
 namespace ntest
 {
@@ -50,6 +48,7 @@ namespace ntest
       Assert.IsTrue(cp is XmlRpcClientProtocol);
     }
 
+#if !FX1_0
     [Test]
     public void Method1Generic()
     {
@@ -59,6 +58,7 @@ namespace ntest
       Assert.IsTrue(cp is IXmlRpcProxy);
       Assert.IsTrue(cp is XmlRpcClientProtocol);
     }
+#endif
 
     public interface IParent : IXmlRpcProxy
     {
@@ -272,37 +272,6 @@ namespace ntest
         Assert.AreEqual("Invalid state number", fex.FaultString);
       }
     }
-
-    [XmlRpcUrl("http://localhost:5678/statename.rem")]
-    public interface IStateName2 : IXmlRpcProxy
-    {
-      [XmlRpcMethod("examples.getStateStruct", StructParams = true)]
-      string GetStateNames(int state1, int state2, int state3);
-    }
-
-    [Test]
-    public void MakeStructParamsCall()
-    {
-      IStateName2 proxy = (IStateName2)XmlRpcProxyGen.Create(typeof(IStateName2));
-      string ret = proxy.GetStateNames(1, 2, 3);
-      Assert.AreEqual("Alabama Alaska Arizona", ret);
-    }
-
-    [Test]
-    public void FileIOPermission()
-    {
-      FileIOPermission f = new FileIOPermission(PermissionState.Unrestricted);
-      f.Deny();
-      try
-      {
-        IStateName2 proxy = (IStateName2)XmlRpcProxyGen.Create(typeof(IStateName2));
-      }
-      finally
-      {
-        CodeAccessPermission.RevertDeny();
-      }
-    }
   }
 }
-
 

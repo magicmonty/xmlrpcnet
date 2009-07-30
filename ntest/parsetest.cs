@@ -25,10 +25,10 @@ namespace ntest
       public DateTime mdt;
       public byte[] mb64;
       public int[] ma;
-      public int? xi;
-      public Boolean? xb;
-      public Double? xd;
-      public DateTime? xdt;
+      public XmlRpcInt xi;
+      public XmlRpcBoolean xb;
+      public XmlRpcDouble xd;
+      public XmlRpcDateTime xdt;
       public XmlRpcStruct xstr;
     }
 
@@ -279,96 +279,6 @@ namespace ntest
       object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error, serializer,
         out parsedType, out parsedArrayType);
       Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37), 
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_WordPress()
-    {
-      // yyyyMMddThh:mm:ssZ
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>20020706T11:25:37Z</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_TypePad()
-    {
-      // yyyy-MM-ddThh:mm:ssZ
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>2002-07-06T11:25:37Z</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_TZPlus00()
-    {
-      // yyyyMMddThh:mm:ssZ+00
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>20020706T11:25:37+00</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_TZPlus0000()
-    {
-      // yyyyMMddThh:mm:ssZ+00
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>20020706T11:25:37+0000</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_TZMinus00()
-    {
-      // yyyyMMddThh:mm:ssZ+00
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>20020706T11:25:37-00</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
-        (DateTime)obj);
-    }
-
-    [Test]
-    public void DateTime_TZMinus0000()
-    {
-      // yyyyMMddThh:mm:ssZ+00
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-        <value><dateTime.iso8601>20020706T11:25:37-0000</dateTime.iso8601></value>";
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      serializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
-      object obj = Utils.Parse(xml, typeof(DateTime), MappingAction.Error,
-        serializer, out parsedType, out parsedArrayType);
-      Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37),
         (DateTime)obj);
     }
 
@@ -668,10 +578,10 @@ namespace ntest
     {
       Type parsedType, parsedArrayType;
       string xml = @"<?xml version=""1.0"" ?><value><int>12345</int></value>";
-      object obj = Utils.Parse(xml, typeof(int?), MappingAction.Error, 
+      object obj = Utils.Parse(xml, typeof(XmlRpcInt), MappingAction.Error, 
         out parsedType, out parsedArrayType);
-      Assert.IsInstanceOfType(typeof(int?), obj);
-      Assert.AreEqual(12345, (int?)obj);
+      Assert.IsInstanceOfType(typeof(XmlRpcInt), obj);
+      Assert.AreEqual(12345, (XmlRpcInt)obj);
     }
 
     //---------------------- XmlRpcBoolean ---------------------------------// 
@@ -681,9 +591,9 @@ namespace ntest
       Type parsedType, parsedArrayType;
       string xml = @"<?xml version=""1.0"" ?>
         <value><boolean>1</boolean></value>";
-      object obj = Utils.Parse(xml, typeof(Boolean?), MappingAction.Error, 
+      object obj = Utils.Parse(xml, typeof(XmlRpcBoolean), MappingAction.Error, 
         out parsedType, out parsedArrayType);
-      Assert.AreEqual(new Boolean?(true), (Boolean?)obj);
+      Assert.AreEqual(new XmlRpcBoolean(true), (XmlRpcBoolean)obj);
     }
             
     //---------------------- XmlRpcDouble ----------------------------------// 
@@ -693,9 +603,9 @@ namespace ntest
       Type parsedType, parsedArrayType;
       string xml = @"<?xml version=""1.0"" ?>
         <value><double>543.21</double></value>";
-      object obj = Utils.Parse(xml, typeof(Double?), MappingAction.Error, 
+      object obj = Utils.Parse(xml, typeof(XmlRpcDouble), MappingAction.Error, 
         out parsedType, out parsedArrayType);
-      Assert.AreEqual(new Double?(543.21), (Double?)obj);
+      Assert.AreEqual(new XmlRpcDouble(543.21), (XmlRpcDouble)obj);
     }
       
     //---------------------- XmlRpcDateTime --------------------------------// 
@@ -705,13 +615,14 @@ namespace ntest
       Type parsedType, parsedArrayType;
       string xml = @"<?xml version=""1.0"" ?>
         <value><dateTime.iso8601>20020706T11:25:37</dateTime.iso8601></value>";
-      object obj = Utils.Parse(xml, typeof(DateTime?), MappingAction.Error, 
+      object obj = Utils.Parse(xml, typeof(XmlRpcDateTime), MappingAction.Error, 
         out parsedType, out parsedArrayType);
       Assert.AreEqual(
-        new DateTime?(new DateTime(2002, 7, 6, 11, 25, 37)),
-        (DateTime?)obj);
+        new XmlRpcDateTime(new DateTime(2002, 7, 6, 11, 25, 37)), 
+        (XmlRpcDateTime)obj);
     }
 
+#if !FX1_0
     //---------------------- int? -------------------------------------// 
     [Test]
     public void nullableIntType()
@@ -759,6 +670,7 @@ namespace ntest
         out parsedType, out parsedArrayType);
       Assert.AreEqual(new DateTime(2002, 7, 6, 11, 25, 37), obj);
     }
+#endif
      
   //---------------------- XmlRpcStruct array ----------------------------// 
     [Test]
@@ -803,131 +715,6 @@ namespace ntest
       Assert.AreEqual(xstruct2["mi"], 28);
     }
 
-    //---------------------- struct ------------------------------------------// 
-    [Test]
-    [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
-    public void NameEmptyString()
-    {
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-<value>
-  <struct>
-    <member>
-      <name/>
-      <value><i4>18</i4></value>
-    </member>
-  </struct>
-</value>";
-      object obj = Utils.Parse(xml, null, MappingAction.Error,
-        out parsedType, out parsedArrayType);
-    }
 
-    //------------------------------------------------------------------------// 
-    struct Struct3
-    {
-      [XmlRpcMember("IntField")]
-      public int intOne;
-      [XmlRpcMember("IntProperty")]
-      public int intTwo { get { return _intTwo; } set { _intTwo = value; } }
-      private int _intTwo;
-    }
-
-    [Test]
-    public void PropertyXmlRpcName()
-    {
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-<value>
-  <struct>
-    <member>
-      <name>IntField</name>
-      <value><i4>18</i4></value>
-    </member>
-    <member>
-      <name>IntProperty</name>
-      <value><i4>18</i4></value>
-    </member>
-  </struct>
-</value>";
-      object obj = Utils.Parse(xml, typeof(Struct3), MappingAction.Error,
-        out parsedType, out parsedArrayType);
-    }
-
-
-    struct Struct4
-    {
-      [NonSerialized]
-      public int x;
-      public int y;
-    }
-
-    [Test]
-    public void IgnoreNonSerialized()
-    {
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-<value>
-  <struct>
-    <member>
-      <name>y</name>
-      <value><i4>18</i4></value>
-    </member>
-  </struct>
-</value>";
-      object obj = Utils.Parse(xml, typeof(Struct4), MappingAction.Error,
-        out parsedType, out parsedArrayType);
-    }
-
-    [Test]
-    [ExpectedException(typeof(XmlRpcNonSerializedMember))]
-    public void NonSerializedInStruct()
-    {
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-<value>
-  <struct>
-    <member>
-      <name>x</name>
-      <value><i4>12</i4></value>
-    </member>
-    <member>
-      <name>y</name>
-      <value><i4>18</i4></value>
-    </member>
-  </struct>
-</value>";
-      object obj = Utils.Parse(xml, typeof(Struct4), MappingAction.Error,
-        out parsedType, out parsedArrayType);
-      Struct4 ret = (Struct4)obj;
-      Assert.AreEqual(0, ret.x);
-      Assert.AreEqual(18, ret.y);
-    }
-
-
-    struct Struct5
-    {
-      public int x;
-    }
-
-    [Test]
-    public void UnexpectedMember()
-    {
-      Type parsedType, parsedArrayType;
-      string xml = @"<?xml version=""1.0"" ?>
-<value>
-  <struct>
-    <member>
-      <name>x</name>
-      <value><i4>12</i4></value>
-    </member>
-    <member>
-      <name>y</name>
-      <value><i4>18</i4></value>
-    </member>
-  </struct>
-</value>";
-      object obj = Utils.Parse(xml, typeof(Struct5), MappingAction.Error,
-        out parsedType, out parsedArrayType);
-    }
   }
 }

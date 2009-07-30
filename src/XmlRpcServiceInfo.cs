@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 namespace CookComputing.XmlRpc
 {
   using System;
-  using System.Collections.Generic;
+  using System.Collections;
   using System.Reflection;
   using System.Text.RegularExpressions;
 
@@ -45,7 +45,7 @@ namespace CookComputing.XmlRpc
     tMultiDimArray,
     tVoid
   }
-
+    
   public class XmlRpcServiceInfo
   {
     public static XmlRpcServiceInfo CreateServiceInfo(Type type)
@@ -61,31 +61,31 @@ namespace CookComputing.XmlRpc
       else
         svcInfo.Name = type.Name;
       // extract method info
-      var methods = new Dictionary<string, XmlRpcMethodInfo>();
+      Hashtable methods = new Hashtable();
 
-      foreach (Type itf in type.GetInterfaces())
+      foreach(Type itf in type.GetInterfaces())
       {
         XmlRpcServiceAttribute itfAttr = (XmlRpcServiceAttribute)
           Attribute.GetCustomAttribute(itf, typeof(XmlRpcServiceAttribute));
         if (itfAttr != null)
           svcInfo.doc = itfAttr.Description;
-#if (!COMPACT_FRAMEWORK)
+#if (!COMPACT_FRAMEWORK)          
         InterfaceMapping imap = type.GetInterfaceMap(itf);
         foreach (MethodInfo mi in imap.InterfaceMethods)
         {
-          ExtractMethodInfo(methods, mi, itf);
+          ExtractMethodInfo(methods, mi);
         }
 #else
         foreach (MethodInfo mi in itf.GetMethods())
         {
-          ExtractMethodInfo(methods, mi, itf);
+          ExtractMethodInfo(methods, mi);
         }
 #endif
       }
 
       foreach (MethodInfo mi in type.GetMethods())
       {
-        var mthds = new List<MethodInfo>();
+        ArrayList mthds = new ArrayList();
         mthds.Add(mi);
         MethodInfo curMi = mi;
         while (true)
@@ -96,9 +96,9 @@ namespace CookComputing.XmlRpc
           mthds.Insert(0, baseMi);
           curMi = baseMi;
         }
-        foreach (MethodInfo mthd in mthds)
+        foreach(MethodInfo mthd in mthds)
         {
-          ExtractMethodInfo(methods, mthd, type);
+          ExtractMethodInfo(methods, mthd);
         }
       }
       svcInfo.methodInfos = new XmlRpcMethodInfo[methods.Count];
@@ -107,44 +107,51 @@ namespace CookComputing.XmlRpc
       return svcInfo;
     }
 
-    static void ExtractMethodInfo(Dictionary<string, XmlRpcMethodInfo> methods, 
-      MethodInfo mi, Type type)
+    static void ExtractMethodInfo(Hashtable methods, MethodInfo mi)
     {
       XmlRpcMethodAttribute attr = (XmlRpcMethodAttribute)
-        Attribute.GetCustomAttribute(mi,
+        Attribute.GetCustomAttribute(mi, 
         typeof(XmlRpcMethodAttribute));
       if (attr == null)
         return;
-      XmlRpcMethodInfo mthdInfo = new XmlRpcMethodInfo();
+
+      XmlRpcMethodInfo mthdInfo = (XmlRpcMethodInfo)methods[mi.Name];
+      if (mthdInfo == null)
+      {
+        mthdInfo = new XmlRpcMethodInfo();
+        methods.Add(mi.Name, mthdInfo);
+      }
+
       mthdInfo.MethodInfo = mi;
       mthdInfo.XmlRpcName = GetXmlRpcMethodName(mi);
       mthdInfo.MiName = mi.Name;
       mthdInfo.Doc = attr.Description;
       mthdInfo.IsHidden = attr.IntrospectionMethod | attr.Hidden;
       // extract parameters information
-      var parmList = new List<XmlRpcParameterInfo>();
+      ArrayList parmList = new ArrayList();
       ParameterInfo[] parms = mi.GetParameters();
       foreach (ParameterInfo parm in parms)
       {
         XmlRpcParameterInfo parmInfo = new XmlRpcParameterInfo();
-        parmInfo.Name = parm.Name;
+        parmInfo.Name = parm.Name;  
         parmInfo.Type = parm.ParameterType;
         parmInfo.XmlRpcType = GetXmlRpcTypeString(parm.ParameterType);
         // retrieve optional attributed info
         parmInfo.Doc = "";
         XmlRpcParameterAttribute pattr = (XmlRpcParameterAttribute)
-          Attribute.GetCustomAttribute(parm,
+          Attribute.GetCustomAttribute(parm, 
           typeof(XmlRpcParameterAttribute));
         if (pattr != null)
         {
           parmInfo.Doc = pattr.Description;
           parmInfo.XmlRpcName = pattr.Name;
         }
-        parmInfo.IsParams = Attribute.IsDefined(parm,
+        parmInfo.IsParams = Attribute.IsDefined(parm, 
           typeof(ParamArrayAttribute));
         parmList.Add(parmInfo);
       }
-      mthdInfo.Parameters = parmList.ToArray();
+      mthdInfo.Parameters = (XmlRpcParameterInfo[])
+        parmList.ToArray(typeof(XmlRpcParameterInfo));
       // extract return type information
       mthdInfo.ReturnType = mi.ReturnType;
       mthdInfo.ReturnXmlRpcType = GetXmlRpcTypeString(mi.ReturnType);
@@ -155,14 +162,6 @@ namespace CookComputing.XmlRpc
         mthdInfo.ReturnDoc = ((XmlRpcReturnValueAttribute)orattrs[0]).Description;
       }
 
-      if (methods.ContainsKey(mthdInfo.XmlRpcName))
-      {
-        throw new XmlRpcDupXmlRpcMethodNames(String.Format("Method "
-          + "{0} in type {1} has duplicate XmlRpc method name {2}",
-          mi.Name, type.Name, mthdInfo.XmlRpcName));
-      }
-      else
-        methods.Add(mthdInfo.XmlRpcName, mthdInfo);
     }
 
     public MethodInfo GetMethodInfo(string xmlRpcMethodName)
@@ -180,7 +179,7 @@ namespace CookComputing.XmlRpc
     static bool IsVisibleXmlRpcMethod(MethodInfo mi)
     {
       bool ret = false;
-      Attribute attr = Attribute.GetCustomAttribute(mi,
+      Attribute attr = Attribute.GetCustomAttribute(mi, 
         typeof(XmlRpcMethodAttribute));
       if (attr != null)
       {
@@ -193,17 +192,17 @@ namespace CookComputing.XmlRpc
     public static string GetXmlRpcMethodName(MethodInfo mi)
     {
       XmlRpcMethodAttribute attr = (XmlRpcMethodAttribute)
-        Attribute.GetCustomAttribute(mi,
+        Attribute.GetCustomAttribute(mi, 
         typeof(XmlRpcMethodAttribute));
-      if (attr != null
-        && attr.Method != null
+      if (attr != null 
+        && attr.Method != null 
         && attr.Method != "")
       {
         return attr.Method;
       }
       else
       {
-        return mi.Name;
+        return mi.Name; 
       }
     }
 
@@ -254,21 +253,21 @@ namespace CookComputing.XmlRpc
       XmlRpcType ret;
       if (t == typeof(Int32))
         ret = XmlRpcType.tInt32;
-      else if (t == typeof(int?))
+      else if (t == typeof(XmlRpcInt))
         ret = XmlRpcType.tInt32;
       else if (t == typeof(Boolean))
         ret = XmlRpcType.tBoolean;
-      else if (t == typeof(Boolean?))
+      else if (t == typeof(XmlRpcBoolean))
         ret = XmlRpcType.tBoolean;
       else if (t == typeof(String))
         ret = XmlRpcType.tString;
       else if (t == typeof(Double))
         ret = XmlRpcType.tDouble;
-      else if (t == typeof(Double?))
+      else if (t == typeof(XmlRpcDouble))
         ret = XmlRpcType.tDouble;
       else if (t == typeof(DateTime))
         ret = XmlRpcType.tDateTime;
-      else if (t == typeof(DateTime?))
+      else if (t == typeof(XmlRpcDateTime))
         ret = XmlRpcType.tDateTime;
       else if (t == typeof(byte[]))
         ret = XmlRpcType.tBase64;
@@ -282,7 +281,7 @@ namespace CookComputing.XmlRpc
       {
 #if (!COMPACT_FRAMEWORK)
         Type elemType = t.GetElementType();
-        if (elemType != typeof(Object)
+        if (elemType != typeof(Object) 
           && GetXmlRpcType(elemType) == XmlRpcType.tInvalid)
         {
           ret = XmlRpcType.tInvalid;
@@ -325,6 +324,7 @@ namespace CookComputing.XmlRpc
 #endif
 
       }
+#if !FX1_0
       else if (t == typeof(int?))
         ret = XmlRpcType.tInt32;
       else if (t == typeof(Boolean?))
@@ -333,6 +333,7 @@ namespace CookComputing.XmlRpc
         ret = XmlRpcType.tDouble;
       else if (t == typeof(DateTime?))
         ret = XmlRpcType.tDateTime;
+#endif
       else if (t == typeof(void))
       {
         ret = XmlRpcType.tVoid;
@@ -349,8 +350,8 @@ namespace CookComputing.XmlRpc
           if (mi.MemberType == MemberTypes.Field)
           {
             FieldInfo fi = (FieldInfo)mi;
-            if ((fi.FieldType == t) || (fi.FieldType != typeof(Object)
-              && GetXmlRpcType(fi.FieldType) == XmlRpcType.tInvalid))
+            if (fi.FieldType != typeof(Object) 
+              && GetXmlRpcType(fi.FieldType) == XmlRpcType.tInvalid)
             {
               return XmlRpcType.tInvalid;
             }
@@ -358,18 +359,18 @@ namespace CookComputing.XmlRpc
           else if (mi.MemberType == MemberTypes.Property)
           {
             PropertyInfo pi = (PropertyInfo)mi;
-            if ((pi.PropertyType == t) || (pi.PropertyType != typeof(Object)
-              && GetXmlRpcType(pi.PropertyType) == XmlRpcType.tInvalid))
+            if (pi.PropertyType != typeof(Object)
+              && GetXmlRpcType(pi.PropertyType) == XmlRpcType.tInvalid)
             {
               return XmlRpcType.tInvalid;
             }
           }
         }
-        ret = XmlRpcType.tStruct;
+        ret = XmlRpcType.tStruct;        
       }
       else
         ret = XmlRpcType.tInvalid;
-      return ret;
+      return ret;      
     }
 
     static public string GetXmlRpcTypeString(Type t)
@@ -405,9 +406,9 @@ namespace CookComputing.XmlRpc
         ret = "void";
       else
         ret = null;
-      return ret;
+      return ret;      
     }
-
+  
     XmlRpcMethodInfo[] methodInfos;
     String doc;
     string name;

@@ -47,6 +47,7 @@ namespace ntest
   }
 }
 
+
 public struct StateStructRequest
 {
   public int state1;
@@ -80,7 +81,7 @@ public interface IStateName :IXmlRpcProxy
   string GetStateNames(StateStructRequest request);
 }
 
-public class StateNameServer : SystemMethodsBase
+public class StateNameServer : MarshalByRefObject
 {
   [XmlRpcMethod("examples.getStateName")]
   public string GetStateName(int stateNumber)

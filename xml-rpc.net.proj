@@ -1,13 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup>
-    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\tools\CommunityTasks\</MSBuildCommunityTasksPath>
-    <NUnitToolPath>$(MSBuildProjectDirectory)\tools\NUnit\</NUnitToolPath>
-    <KeyFile>CookComputing.key</KeyFile>
-  </PropertyGroup>
-
-  <Import Project="tools\CommunityTasks\MSBuild.Community.Tasks.Targets"/>
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
 
   <Target Name="Build" 
     DependsOnTargets="BuildXmlRpc1_0;BuildXmlRpc2_0;BuildXmlRpcCF1_0;BuildUnitTests;BuildSamples;BuildXrpGen">
@@ -23,9 +16,9 @@
     <!-- Major number is the major number of the most recent version of .NET 
          the build is targetted at -->
     <Major>2</Major>
-    <Minor>4</Minor>
+    <Minor>1</Minor>
     <Build>0</Build>
-    <Revision>0</Revision>
+    <Revision>3</Revision>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -43,8 +36,6 @@
   </Target>
 
   <Target Name="Version1_0">
-    <Error Text="Please supply your own key file CookComputing.key in build directory"  
-           Condition = "!Exists('$(KeyFile)')"/>
     <AssemblyInfo CodeLanguage="CS" 
       OutputFile="src\AssemblyBuildNumber.cs"
       AssemblyVersion="$(Major).$(Minor).$(Build).$(Revision)"
@@ -52,8 +43,7 @@
   </Target>
 
   <Target Name="Version2_0">
-    <Error Text="Please supply your own key file CookComputing.key in build directory"  
-           Condition = "!Exists('$(KeyFile)')"/>
+
     <AssemblyInfo CodeLanguage="CS" 
       OutputFile="src\AssemblyBuildNumber.cs"
       AssemblyVersion="$(Major).$(Minor).$(Build).$(Revision)"
@@ -61,8 +51,6 @@
   </Target>
 
   <Target Name="VersionCF1_0">
-    <Error Text="Please supply your own key file CookComputing.key in build directory"  
-           Condition = "!Exists('$(KeyFile)')"/>
     <AssemblyInfo CodeLanguage="CS" 
       OutputFile="src\AssemblyBuildNumber.cs"
       AssemblyVersion="$(Major).$(Minor).$(Build).$(Revision)"
@@ -70,6 +58,7 @@
   </Target>
 
   <Target Name="BuildXmlRpc1_0" DependsOnTargets="Version1_0">
+    <Error Text="Please supply your own key file"  Condition = "!Exists('../../CookComputing.key')"/>
     <MakeDir Directories = "$(BuildDir)" Condition = "!Exists('$($(BuildDir))')" />
     <MakeDir Directories = "$(BuildDir1_0)" Condition = "!Exists('$($(BuildDir1_0))')" />
     <MSBuild Projects="src\xmlrpc.csproj" Targets="Rebuild"
@@ -128,8 +117,8 @@
      SourceFiles="ntest\iso-8859-1_response.xml;ntest\iso-8859-1_request.xml"
      DestinationFolder="."
         />
-    <NUnit Assemblies="$(BuildDir)\ntest.dll" ToolPath="$(NUnitToolPath)" />
-    <NUnit Assemblies="$(BuildDir1_0)\ntest1_0.dll" ToolPath="$(NUnitToolPath)" />
+    <NUnit Assemblies="$(BuildDir)\ntest.dll" />
+    <NUnit Assemblies="$(BuildDir1_0)\ntest1_0.dll" />
   </Target>
 
   <ItemGroup>

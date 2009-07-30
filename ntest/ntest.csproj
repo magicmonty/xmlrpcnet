@@ -1,7 +1,7 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A03FD7C0-77B4-4731-8818-6E33A0A83E70}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -26,7 +26,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -73,17 +72,13 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CookComputing.XmlRpcServerV3, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CookComputing.XmlRpcV2, Version=0.0.0.0, Culture=neutral" Condition="'$(TargetFX1_0)'!='true'">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\CookComputing.XmlRpcServerV3.dll</HintPath>
-    </Reference>
-    <Reference Include="CookComputing.XmlRpcV3, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\CookComputing.XmlRpcV3.dll</HintPath>
+      <HintPath>..\bin\CookComputing.XmlRpcV2.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.2.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\tools\NUnit\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files\nunit\bin\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -92,7 +87,6 @@
       <Name>System.Data</Name>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
     </Reference>
@@ -101,7 +95,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="acceptencodingclient.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -112,10 +105,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="invoketest.cs">
-      <SubType>Component</SubType>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Listener.cs" />
-    <Compile Include="listenertest.cs" />
     <Compile Include="optionaldeserializetest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,11 +131,9 @@
     <Compile Include="serializetest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ServerProtocol.cs" />
     <Compile Include="serviceinfotest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StateNameListener.cs" />
     <Compile Include="StateNameService.cs" />
     <Compile Include="utils.cs">
       <SubType>Code</SubType>

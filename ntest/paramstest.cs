@@ -202,26 +202,6 @@ namespace ntest
 </methodCall>", reqstr);
     }
 
-    [Test]
-    public void SerializeZeroParametersNoParams()
-    {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[0];
-      req.method = "FooZeroParameters";
-      req.mi = typeof(IFoo).GetMethod("FooZeroParameters");
-      XmlRpcSerializer ser = new XmlRpcSerializer();
-      ser.UseEmptyParamsTag = false;
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
-      Assert.AreEqual(
-        @"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>FooZeroParameters</methodName>
-</methodCall>", reqstr);
-    }
 
     [XmlRpcMethod]
     public int Foo(params object[] args)
@@ -418,93 +398,6 @@ namespace ntest
     public int Send_Param(string task, params object[] args)
     {
       return args.Length;
-    }
-
-
-
-    [XmlRpcMethod]
-    public object[] Linisgre(params object[] args)
-    {
-      return args;
-    }
-
-
-    [Test]
-    public void DeserializeLinisgre()
-    {
-      string xml =
-@"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Linisgre</methodName>
-  <params>
-    <param>
-      <value>
-        <i4>1</i4>
-      </value>
-    </param>
-  </params>
-</methodCall>";
-      StringReader sr = new StringReader(xml);
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
-      Assert.AreEqual(request.method, "Linisgre", "method is Linisgre");
-      Assert.AreEqual(request.args[0].GetType(), typeof(object[]),
-        "argument is object[]");
-      Assert.AreEqual((object[])request.args[0], new object[] { 1 },
-        "argument is params array 1");
-    }
-
-    [Test]
-    public void DeserializeLinisgreNoArgs()
-    {
-      string xml =
-@"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Linisgre</methodName>
-  <params>
-  </params>
-</methodCall>";
-      StringReader sr = new StringReader(xml);
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
-      Assert.AreEqual(request.method, "Linisgre", "method is Linisgre");
-      Assert.AreEqual(request.args[0].GetType(), typeof(object[]),
-        "argument is object[]");
-      Assert.AreEqual((object[])request.args[0], new object[0],
-        "argument is empty params array");
-    }
-
-    [Test]
-    [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
-    public void DeserializeLinisgreEmptyParam()
-    {
-      string xml =
-@"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Linisgre</methodName>
-  <params>
-    <param/>
-  </params>
-</methodCall>";
-      StringReader sr = new StringReader(xml);
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
-    }
-
-    [Test]
-    [ExpectedException(typeof(XmlRpcInvalidParametersException))]
-    public void DeserializeObjectParamsInsufficientParams()
-    {
-      string xml =
-        @"<?xml version=""1.0""?>
-<methodCall>
-  <methodName>Foo1</methodName>
-  <params>
-  </params>
-</methodCall>";
-      StringReader sr = new StringReader(xml);
-      XmlRpcSerializer serializer = new XmlRpcSerializer();
-      XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
     }
 
     [Test]

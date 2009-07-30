@@ -1,6 +1,6 @@
 XML-RPC.NET - XML-RPC for .NET 
-v2.4.0 Release
-Copyright (C) 2001-2008 Charles Cook (chascook@gmail.com)
+v2.1.0
+Copyright (C) 2001-2006 Charles Cook (chascook@gmail.com)
 
 xmlrpcgen 
 Copyright (C) 2003 Joe Bork
@@ -18,8 +18,7 @@ PREQUISITES
 Assembly CookComputing.XmlRpc.dll requires 1.0 .NET runtime and 
 runs on all later versions.
 
-Assembly CookComputing.XmlRpcV2.dll requires 2.0 .NET runtime 
-and runs on all later versions.
+Assembly CookComputing.XmlRpcV2.dll requires 2.0 .NET runtime.
 
 
 DOCUMENTATION

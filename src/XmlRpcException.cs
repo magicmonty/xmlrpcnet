@@ -1,6 +1,6 @@
 /* 
 XML-RPC.NET library
-Copyright (c) 2001-2009, Charles Cook <charlescook@cookcomputing.com>
+Copyright (c) 2001-2006, Charles Cook <charlescook@cookcomputing.com>
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
@@ -27,11 +27,7 @@ namespace CookComputing.XmlRpc
 {
   using System;
 
-#if (!SILVERLIGHT)
   public class XmlRpcException : ApplicationException
-#else
-  public class XmlRpcException : Exception
-#endif
   {
     public XmlRpcException() {}
 
@@ -216,25 +212,6 @@ namespace CookComputing.XmlRpc
 
     public XmlRpcMissingUrl(string msg)
       : base(msg) { }
-  }
-
-  public class XmlRpcDupXmlRpcMethodNames : XmlRpcException
-  {
-    public XmlRpcDupXmlRpcMethodNames() { }
-
-    public XmlRpcDupXmlRpcMethodNames(string msg)
-      : base(msg) { }
-  }
-
-  public class XmlRpcNonSerializedMember : XmlRpcException
-  {
-    public XmlRpcNonSerializedMember() { }
-
-    public XmlRpcNonSerializedMember(string msg)
-      : base(msg) { }
-
-    public XmlRpcNonSerializedMember(string msg, Exception innerEx)
-      : base(msg, innerEx) { }
   }
 
 }

@@ -1,7 +1,0 @@
-
-#content
-{
-	height:expression(offsetParent.offsetHeight-25);
-	width:expression(offsetParent.offsetWidth-190)
-}
-			

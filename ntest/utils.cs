@@ -35,7 +35,6 @@ namespace ntest
       }            
       stm.Position = 0;    
       XmlDocument xdoc = new XmlDocument();
-      xdoc.PreserveWhitespace = true;
       xdoc.Load(stm);
       return xdoc;
     }
@@ -68,7 +67,6 @@ namespace ntest
     {
       StringReader sr = new StringReader(xml);
       XmlDocument xdoc = new XmlDocument();
-      xdoc.PreserveWhitespace = true;
       xdoc.Load(sr);        
       return Parse(xdoc, valueType, action, 
         out parsedType, out parsedArrayType);
@@ -81,7 +79,7 @@ namespace ntest
       out Type parsedType,
       out Type parsedArrayType)
     {
-      XmlNode node = SelectValueNode(xdoc.SelectSingleNode("value"));               
+      XmlNode node = xdoc.SelectSingleNode("value").FirstChild;               
       XmlRpcSerializer.ParseStack parseStack 
         = new XmlRpcSerializer.ParseStack("request");
       XmlRpcSerializer ser = new XmlRpcSerializer();
@@ -100,7 +98,6 @@ namespace ntest
     {
       StringReader sr = new StringReader(xml);
       XmlDocument xdoc = new XmlDocument();
-      xdoc.PreserveWhitespace = true;
       xdoc.Load(sr);
       return Parse(xdoc, valueType, action, serializer,
         out parsedType, out parsedArrayType);
@@ -114,23 +111,13 @@ namespace ntest
       out Type parsedType,
       out Type parsedArrayType)
     {
-      XmlNode node = SelectValueNode(xdoc.SelectSingleNode("value"));
+      XmlNode node = xdoc.SelectSingleNode("value").FirstChild;
       XmlRpcSerializer.ParseStack parseStack
         = new XmlRpcSerializer.ParseStack("request");
       object obj = serializer.ParseValue(node, valueType, parseStack, action,
         out parsedType, out parsedArrayType);
       return obj;
-    }
-
-    static XmlNode SelectValueNode(XmlNode valueNode)
-    {
-      // an XML-RPC value is either held as the child node of a <value> element
-      // or is just the text of the value node as an implicit string value
-      XmlNode vvNode = valueNode.SelectSingleNode("*");
-      if (vvNode == null)
-        vvNode = valueNode.FirstChild;
-      return vvNode;
-    }
+    }	
 
     public static string[] GetLocales()
     {
@@ -155,8 +142,8 @@ namespace ntest
         "ar-AE",
         "ar-YE",
         "hy-AM",
-        "az-Cyrl-AZ",
-        "az-Latn-AZ",
+        "az-AZ-Cyrl",
+        "az-AZ-Latn",
         "eu-ES",
         "be-BY",
         "bg-BG",
@@ -169,13 +156,13 @@ namespace ntest
         "hr-HR",
         "cs-CZ",
         "da-DK",
-        "dv-MV",
+        "div-MV",
         "nl-BE",
         "nl-NL",
         "en-AU",
         "en-BZ",
         "en-CA",
-        "en-029",
+        "en-CB",
         "en-IE",
         "en-JM",
         "en-NZ",
@@ -232,8 +219,8 @@ namespace ntest
         "ro-RO",
         "ru-RU",
         "sa-IN",
-        "sr-Cyrl-CS",
-        "sr-Latn-CS",
+        "sr-SP-Cyrl",
+        "sr-SP-Latn",
         "sk-SK",
         "sl-SI",
         "es-AR",
@@ -266,8 +253,8 @@ namespace ntest
         "tr-TR",
         "uk-UA",
         "ur-PK",
-        "uz-Cyrl-UZ",
-        "uz-Latn-UZ",
+        "uz-UZ-Cyrl",
+        "uz-UZ-Latn",
         "vi-VN"
       };
     }

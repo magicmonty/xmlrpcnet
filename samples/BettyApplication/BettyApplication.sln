@@ -1,5 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{3F7AEE5D-119B-44E1-8F5D-2114FD49BC63}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BettyApplication", "BettyApplication.csproj", "{D82D2A7C-CCBD-4229-9B91-1BDB26F8D5D1}"
 EndProject
 Global

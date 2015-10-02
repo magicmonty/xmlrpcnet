@@ -1,48 +1,48 @@
 ﻿using System;
-using CookComputing.XmlRpc;
-using NUnit.Framework;
 using System.IO;
+using ntest;
+using NUnit.Framework;
 
-namespace ntest
+namespace CookComputing.XmlRpc
 {
-  public enum ItfEnum : int
-  {
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-  }
-
-  public class ItfEnumClass
-  {
-    public ItfEnum IntEnum { get; set; }
-    public ItfEnum intEnum;
-    public ItfEnum[] IntEnums { get; set; }
-    public ItfEnum[] intEnums;
-  }
-
-  [XmlRpcEnumMapping(EnumMapping.String)]
-  public interface IEnumStringInterfaceMapping
-  {
-    [XmlRpcEnumMapping(EnumMapping.String)]
-     void MappingOnMethod(ItfEnum param1, ItfEnum[] param2, 
-      ItfEnum param3);
-  }
-
-  class EnumStringInterfaceMapping : IEnumStringInterfaceMapping
-  {
-    public void MappingOnMethod(ItfEnum param1, ItfEnum[] param2, ItfEnum param3)
+    public enum ItfEnum : int
     {
-      throw new NotImplementedException();
+        Zero,
+        One,
+        Two,
+        Three,
+        Four,
     }
 
-    [Test]
-    public void SerializeWithMappingOnInterface()
+    public class ItfEnumClass
     {
-      Stream stm = new MemoryStream();
-      XmlRpcRequest req = new XmlRpcRequest();
-      req.args = new Object[] 
+        public ItfEnum IntEnum { get; set; }
+        public ItfEnum intEnum;
+        public ItfEnum[] IntEnums { get; set; }
+        public ItfEnum[] intEnums;
+    }
+
+    [XmlRpcEnumMapping(EnumMapping.String)]
+    public interface IEnumStringInterfaceMapping
+    {
+        [XmlRpcEnumMapping(EnumMapping.String)]
+        void MappingOnMethod(ItfEnum param1, ItfEnum[] param2,
+         ItfEnum param3);
+    }
+
+    class EnumStringInterfaceMapping : IEnumStringInterfaceMapping
+    {
+        public void MappingOnMethod(ItfEnum param1, ItfEnum[] param2, ItfEnum param3)
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void SerializeWithMappingOnInterface()
+        {
+            Stream stm = new MemoryStream();
+            XmlRpcRequest req = new XmlRpcRequest();
+            req.args = new Object[] 
       { 
         IntEnum.Zero,
         new IntEnum[] { IntEnum.One, IntEnum.Two },
@@ -54,16 +54,16 @@ namespace ntest
           intEnums = new ItfEnum[] { ItfEnum.Three, ItfEnum.Four },
         } 
       };
-      req.method = "MappingOnMethod";
-      req.mi = this.GetType().GetMethod("MappingOnMethod");
-      var ser = new XmlRpcRequestSerializer();
-      ser.SerializeRequest(stm, req);
-      stm.Position = 0;
-      TextReader tr = new StreamReader(stm);
-      string reqstr = tr.ReadToEnd();
+            req.method = "MappingOnMethod";
+            req.mi = this.GetType().GetMethod("MappingOnMethod");
+            var ser = new XmlRpcRequestSerializer();
+            ser.SerializeRequest(stm, req);
+            stm.Position = 0;
+            TextReader tr = new StreamReader(stm);
+            string reqstr = tr.ReadToEnd();
 
-      Assert.AreEqual(
-        @"<?xml version=""1.0""?>
+            Assert.AreEqual(
+              @"<?xml version=""1.0""?>
 <methodCall>
   <methodName>MappingOnMethod</methodName>
   <params>
@@ -136,6 +136,6 @@ namespace ntest
     </param>
   </params>
 </methodCall>", reqstr);
+        }
     }
-  }
 }

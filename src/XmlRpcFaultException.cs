@@ -23,71 +23,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+using System.Security;
+
 namespace CookComputing.XmlRpc
 {
-  using System;
-#if (!COMPACT_FRAMEWORK)
-  using System.Runtime.Serialization;
-#endif
+    using System;
+    using System.Runtime.Serialization;
 
-  // used to return server-side errors to client code - also can be 
-  // thrown by Service implmentation code to return custom Fault Responses
-#if (!COMPACT_FRAMEWORK && !SILVERLIGHT)
-  [Serializable]
-#endif
-  public class XmlRpcFaultException :
-#if (!SILVERLIGHT)
-    ApplicationException
-#else
-    Exception
-#endif
-  { 
-    // constructors
-    //
-    public XmlRpcFaultException(int TheCode, string TheString)
-      : base("Server returned a fault exception: [" + TheCode.ToString() +  
-              "] " + TheString)
+    // used to return server-side errors to client code - also can be 
+    // thrown by Service implmentation code to return custom Fault Responses
+    [Serializable]
+    public class XmlRpcFaultException : ApplicationException
     {
-      m_faultCode = TheCode;
-      m_faultString = TheString;
-    }
-#if (!COMPACT_FRAMEWORK && !SILVERLIGHT)
-    // deserialization constructor
-    protected XmlRpcFaultException(
-      SerializationInfo info, 
-      StreamingContext context) 
-      : base(info, context) 
-    {
-      m_faultCode = (int)info.GetValue("m_faultCode", typeof(int));
-      m_faultString = (String)info.GetValue("m_faultString", typeof(string));
-    }
-#endif
-    // properties
-    //
-    public int FaultCode 
-    {
-      get { return m_faultCode; } 
-    }
+        public XmlRpcFaultException(int theCode, string theString)
+            : base(string.Format("Server returned a fault exception: [{0}] {1}", theCode.ToString(), theString))
+        {
+            _faultCode = theCode;
+            _faultString = theString;
+        }
 
-    public string FaultString 
-    {
-      get { return m_faultString; } 
+        // deserialization constructor
+        protected XmlRpcFaultException(
+          SerializationInfo info,
+          StreamingContext context)
+            : base(info, context)
+        {
+            _faultCode = info.GetInt32("_faultCode");
+            _faultString = info.GetString("_faultString");
+        }
+
+        public int FaultCode { get { return _faultCode; } }
+
+        private readonly int _faultCode;
+
+        public string FaultString { get { return _faultString; } }
+
+        private readonly string _faultString;
+
+        [SecurityCritical]
+        public override void GetObjectData(
+          SerializationInfo info,
+          StreamingContext context)
+        {
+            info.AddValue("_faultCode", _faultCode);
+            info.AddValue("_faultString", _faultString);
+            base.GetObjectData(info, context);
+        }
     }
-#if (!COMPACT_FRAMEWORK && !SILVERLIGHT)
-    // public methods
-    //
-    public override void GetObjectData(
-      SerializationInfo info, 
-      StreamingContext context)
-    {
-      info.AddValue("m_faultCode", m_faultCode);
-      info.AddValue("m_faultString", m_faultString);
-      base.GetObjectData(info, context);
-    }
-#endif        
-    // data
-    //
-    int m_faultCode;
-    string m_faultString;
-  }
 }

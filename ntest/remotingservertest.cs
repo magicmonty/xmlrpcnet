@@ -1,20 +1,16 @@
-using System;
-using System.IO;
-using System.Reflection;
-using  NUnit.Framework;
-using CookComputing.XmlRpc;
+using ntest;
+using NUnit.Framework;
 
-namespace ntest
-{       
-
-  [TestFixture]
-  public class RemotingServerTest
-  {
-    [Test]
-    public void Method1()
+namespace CookComputing.XmlRpc
+{
+    [TestFixture]
+    public class RemotingServerTest
     {
-      ITest proxy = (ITest)XmlRpcProxyGen.Create(typeof(ITest));
-      XmlRpcClientProtocol cp = (XmlRpcClientProtocol)proxy;
+        [Test]
+        public void Method1()
+        {
+            var proxy = (ITest)XmlRpcProxyGen.Create(typeof(ITest));
+            XmlRpcClientProtocol cp = (XmlRpcClientProtocol)proxy;
+        }
     }
-  }
 }

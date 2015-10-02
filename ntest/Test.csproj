@@ -8,9 +8,9 @@
     <ProjectGuid>{6E73A11C-9595-4C6C-93C2-760BFEA37A1A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ntest</RootNamespace>
-    <AssemblyName>ntest</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>CookComputing.XmlRpc</RootNamespace>
+    <AssemblyName>Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -27,6 +27,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,14 +51,9 @@
     <NoWarn>649;169</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CookComputing.XmlRpcServerV2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="CookComputing.XmlRpcV2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\tools\NUnit\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -66,13 +62,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="acceptencodingclient.cs">
+    <Compile Include="AcceptEncodingClientTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="deserializerequesttest.cs">
+    <Compile Include="DeserializeRequestTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="deserializeresponsetest.cs">
+    <Compile Include="DeserializeResponseTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EnumStringInterfaceMapping.cs" />
@@ -123,7 +119,7 @@
     <Compile Include="StateNameService.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="utils.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="XmlRpcParserTest.cs" />
     <Compile Include="XmlRpcStructTest.cs" />
     <Compile Include="XmlRpcType.cs" />
@@ -155,6 +151,30 @@
     <Content Include="testdocuments\iso-8859-1_response.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\samples\StateNameServer\interface\interface.csproj">
+      <Project>{D336462F-2F05-4B21-B616-BE7A0F8F8134}</Project>
+      <Name>interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\samples\StateNameServer\server\server.csproj">
+      <Project>{84AFB9E3-2694-46D6-AF0F-F4EE213F0CEC}</Project>
+      <Name>server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\CookComputing.XmlRpc.csproj">
+      <Project>{1b4b0a58-0afb-4090-91dd-18912cc7de65}</Project>
+      <Name>CookComputing.XmlRpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xmlrpcserver\CookComputing.XmlRpcServer.csproj">
+      <Project>{7549fcd3-d436-44dc-a013-0d0630b7236b}</Project>
+      <Name>CookComputing.XmlRpcServer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

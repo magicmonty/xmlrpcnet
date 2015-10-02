@@ -1,0 +1,15 @@
+type file
+id Pagansoft.Functional
+title PaganSoft.Functional
+authors Martin Gondermann, Charles Cook
+owners Martin Gondermann
+projectUrl http://github.com/magicmonty/xmlrpcnet
+licenseurl http://www.opensource.org/licenses/mit-license.html
+tags xmlrpc,xml,rpc
+description
+  Updated fork of "http://xml-rpc.net/" by CookComputing
+releaseNotes
+  3.0.0: Initial Release with an Option type
+files
+  bin/Release/CookComputing.XmlRpc.dll ==> lib/net40
+  bin/Release/CookComputing.XmlRpcServer.dll ==> lib/net40

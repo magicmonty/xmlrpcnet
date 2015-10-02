@@ -3,3 +3,4 @@ NUGET
   specs:
     FAKE (4.4.4)
     NUnit (2.6.4) - framework: >= net40
+    NUnit.Runners (2.6.4)

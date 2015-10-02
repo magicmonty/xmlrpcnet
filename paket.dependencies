@@ -3,3 +3,4 @@ source N:\Dpt_Development\NuGet\Repository
 
 nuget FAKE
 nuget NUnit 2.6.4 framework: >= net40
+nuget nunit.runners

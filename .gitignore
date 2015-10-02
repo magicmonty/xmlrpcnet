@@ -6,3 +6,7 @@ UpgradeLog.htm
 *.userprefs
 .paket/paket.exe
 packages/
+.fake/
+TestResult.xml
+**/AssemblyBuildNumber.cs
+deploy

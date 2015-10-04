@@ -27,131 +27,133 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.Collections;
-  using System.Globalization;
-  using System.IO;
-  using System.Reflection;
-  using System.Text;
-  using System.Text.RegularExpressions;
-  using System.Threading;
-  using System.Xml;
-  using System.Collections.Generic;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Xml;
 
-  public class XmlRpcRequestSerializer : XmlRpcSerializer
-  {
-    public XmlRpcRequestSerializer() { }
-    public XmlRpcRequestSerializer(XmlRpcFormatSettings settings) : base(settings) { }
-
-    public void SerializeRequest(Stream stm, XmlRpcRequest request)
+    public class XmlRpcRequestSerializer : XmlRpcSerializer
     {
-      XmlWriter xtw = XmlRpcXmlWriter.Create(stm, base.XmlRpcFormatSettings);
-      xtw.WriteStartDocument();
-      xtw.WriteStartElement("", "methodCall", "");
-      {
-        var mappingActions = new MappingActions();
-        mappingActions = GetTypeMappings(request.mi, mappingActions);
-        mappingActions = GetMappingActions(request.mi, mappingActions);
-        WriteFullElementString(xtw, "methodName", request.method);
-        if (request.args.Length > 0 || UseEmptyParamsTag)
+        public XmlRpcRequestSerializer()
         {
-          xtw.WriteStartElement("params");
-          try
-          {
-            if (!IsStructParamsMethod(request.mi))
-              SerializeParams(xtw, request, mappingActions);
-            else
-              SerializeStructParams(xtw, request, mappingActions);
-          }
-          catch (XmlRpcUnsupportedTypeException ex)
-          {
-            throw new XmlRpcUnsupportedTypeException(ex.UnsupportedType,
-              String.Format("A parameter is of, or contains an instance of, "
-              + "type {0} which cannot be mapped to an XML-RPC type",
-              ex.UnsupportedType));
-          }
-          WriteFullEndElement(xtw);
         }
-      }
-      WriteFullEndElement(xtw);
-      xtw.Flush();
-    }
 
-    void SerializeParams(XmlWriter xtw, XmlRpcRequest request,
-      MappingActions mappingActions)
-    {
-      ParameterInfo[] pis = null;
-      if (request.mi != null)
-      {
-        pis = request.mi.GetParameters();
-      }
-      for (int i = 0; i < request.args.Length; i++)
-      {
-        var paramMappingActions = pis == null ? mappingActions
-          : GetMappingActions(pis[i], mappingActions);
-        if (pis != null)
+        public XmlRpcRequestSerializer(XmlRpcFormatSettings settings) : base(settings)
         {
-          if (i >= pis.Length)
-            throw new XmlRpcInvalidParametersException("Number of request "
-              + "parameters greater than number of proxy method parameters.");
-          if (i == pis.Length - 1
-            && Attribute.IsDefined(pis[i], typeof(ParamArrayAttribute)))
-          {
-            Array ary = (Array)request.args[i];
-            foreach (object o in ary)
+        }
+
+        public void SerializeRequest(Stream stm, XmlRpcRequest request)
+        {
+            var xtw = XmlRpcXmlWriter.Create(stm, XmlRpcFormatSettings);
+            xtw.WriteStartDocument();
+            xtw.WriteStartElement(string.Empty, "methodCall", string.Empty);
             {
-              //if (o == null)
-              //  throw new XmlRpcNullParameterException(
-              //    "Null parameter in params array");
-              xtw.WriteStartElement("", "param", "");
-              Serialize(xtw, o, paramMappingActions);
-              WriteFullEndElement(xtw);
+                var mappingActions = new MappingActions();
+                mappingActions = GetTypeMappings(request.Mi, mappingActions);
+                mappingActions = GetMappingActions(request.Mi, mappingActions);
+                WriteFullElementString(xtw, "methodName", request.Method);
+                if (request.Args.Length > 0 || UseEmptyParamsTag)
+                {
+                    xtw.WriteStartElement("params");
+                    try
+                    {
+                        if (!IsStructParamsMethod(request.Mi))
+                            SerializeParams(xtw, request, mappingActions);
+                        else
+                            SerializeStructParams(xtw, request, mappingActions);
+                    }
+                    catch (XmlRpcUnsupportedTypeException ex)
+                    {
+                        throw new XmlRpcUnsupportedTypeException(
+                            ex.UnsupportedType,
+                            string.Format(
+                                "A parameter is of, or contains an instance of, type {0} which cannot be mapped to an XML-RPC type",
+                                ex.UnsupportedType));
+                    }
+                    WriteFullEndElement(xtw);
+                }
             }
-            break;
-          }
+            WriteFullEndElement(xtw);
+            xtw.Flush();
         }
-        //if (request.args[i] == null)
-        //{
-        //  throw new XmlRpcNullParameterException(String.Format(
-        //    "Null method parameter #{0}", i + 1));
-        //}
-        xtw.WriteStartElement("", "param", "");
-        Serialize(xtw, request.args[i], paramMappingActions);
-        WriteFullEndElement(xtw);
-      }
-    }
 
-    void SerializeStructParams(XmlWriter xtw, XmlRpcRequest request,
-      MappingActions mappingActions)
-    {
-      ParameterInfo[] pis = request.mi.GetParameters();
-      if (request.args.Length > pis.Length)
-        throw new XmlRpcInvalidParametersException("Number of request "
-          + "parameters greater than number of proxy method parameters.");
-      if (Attribute.IsDefined(pis[request.args.Length - 1],
-        typeof(ParamArrayAttribute)))
-      {
-        throw new XmlRpcInvalidParametersException("params parameter cannot "
-          + "be used with StructParams.");
-      }
-      xtw.WriteStartElement("", "param", "");
-      xtw.WriteStartElement("", "value", "");
-      xtw.WriteStartElement("", "struct", "");
-      for (int i = 0; i < request.args.Length; i++)
-      {
-        if (request.args[i] == null)
+        void SerializeParams(
+            XmlWriter xtw, 
+            XmlRpcRequest request,
+            MappingActions mappingActions)
         {
-          throw new XmlRpcNullParameterException(String.Format(
-            "Null method parameter #{0}", i + 1));
+            ParameterInfo[] pis = null;
+            if (request.Mi != null)
+                pis = request.Mi.GetParameters();
+            
+            for (var i = 0; i < request.Args.Length; i++)
+            {
+                var paramMappingActions = pis == null 
+                    ? mappingActions
+                    : GetMappingActions(pis[i], mappingActions);
+
+                if (pis != null)
+                {
+                    if (i >= pis.Length)
+                        throw new XmlRpcInvalidParametersException(
+                            "Number of request parameters greater than number of proxy method parameters.");
+                    
+                    if (i == pis.Length - 1 && Attribute.IsDefined(pis[i], typeof(ParamArrayAttribute)))
+                    {
+                        var ary = (Array)request.Args[i];
+                        foreach (var o in ary)
+                        {
+                            xtw.WriteStartElement("", "param", "");
+                            Serialize(xtw, o, paramMappingActions);
+                            WriteFullEndElement(xtw);
+                        }
+                        break;
+                    }
+                }
+                xtw.WriteStartElement("", "param", "");
+                Serialize(xtw, request.Args[i], paramMappingActions);
+                WriteFullEndElement(xtw);
+            }
         }
-        xtw.WriteStartElement("", "member", "");
-        WriteFullElementString(xtw, "name", pis[i].Name);
-        Serialize(xtw, request.args[i], mappingActions);
-        WriteFullEndElement(xtw);
-      }
-      WriteFullEndElement(xtw);
-      WriteFullEndElement(xtw);
-      WriteFullEndElement(xtw);
+
+        void SerializeStructParams(
+            XmlWriter xtw, 
+            XmlRpcRequest request,
+            MappingActions mappingActions)
+        {
+            var pis = request.Mi.GetParameters();
+            if (request.Args.Length > pis.Length)
+                throw new XmlRpcInvalidParametersException(
+                    "Number of request parameters greater than number of proxy method parameters.");
+            
+            if (Attribute.IsDefined(pis[request.Args.Length - 1],
+                typeof(ParamArrayAttribute)))
+            {
+                throw new XmlRpcInvalidParametersException(
+                    "params parameter cannot be used with StructParams.");
+            }
+
+            xtw.WriteStartElement("", "param", "");
+            xtw.WriteStartElement("", "value", "");
+            xtw.WriteStartElement("", "struct", "");
+            for (int i = 0; i < request.Args.Length; i++)
+            {
+                if (request.Args[i] == null)
+                {
+                    throw new XmlRpcNullParameterException(
+                        string.Format(
+                            "Null method parameter #{0}", 
+                            i + 1));
+                }
+
+                xtw.WriteStartElement("", "member", "");
+                WriteFullElementString(xtw, "name", pis[i].Name);
+                Serialize(xtw, request.Args[i], mappingActions);
+                WriteFullEndElement(xtw);
+            }
+            WriteFullEndElement(xtw);
+            WriteFullEndElement(xtw);
+            WriteFullEndElement(xtw);
+        }
     }
-  }
 }

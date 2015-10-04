@@ -23,16 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System;
 using System.IO;
 
 namespace CookComputing.XmlRpc
 {
 
-  public interface IHttpRequest
-  {
-    Stream InputStream { get; }
-    string HttpMethod { get; }
-  }    
+    public interface IHttpRequest
+    {
+        Stream InputStream { get; }
+
+        string HttpMethod { get; }
+    }
 
 }

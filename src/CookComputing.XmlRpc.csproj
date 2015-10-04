@@ -2,14 +2,10 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1B4B0A58-0AFB-4090-91DD-18912CC7DE65}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <ApplicationIcon>
-    </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>CookComputing.XmlRpc</AssemblyName>
@@ -21,8 +17,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>CookComputing.XmlRpc</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -48,44 +42,31 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
     <NoWarn>649</NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
     <NoWarn>649</NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
@@ -101,6 +82,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -130,17 +113,10 @@
     <Compile Include="MappingActions.cs" />
     <Compile Include="MappingStack.cs" />
     <Compile Include="XmlRpcDebugLogger.cs" />
-    <Compile Include="XmlRpcEnumMapping.cs" />
     <Compile Include="XmlRpcFormatSettings.cs" />
-    <Compile Include="GuidEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IXmlRpcProxy.cs" />
     <Compile Include="RequestResponseLogger.cs" />
     <Compile Include="Tracer.cs" />
-    <Compile Include="util.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="WebSettings.cs" />
     <Compile Include="XmlRpcAsyncResult.cs">
       <SubType>Code</SubType>
@@ -220,6 +196,33 @@
     </Compile>
     <Compile Include="XmlRpcXmlReader.cs" />
     <Compile Include="XmlRpcXmlWriter.cs" />
+    <Compile Include="Util.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EnumMapping.cs" />
+    <Compile Include="XmlRpcEnumMappingAttribute.cs" />
+    <Compile Include="XmlRpcUnsupportedTypeException.cs" />
+    <Compile Include="XmlRpcUnexpectedTypeException.cs" />
+    <Compile Include="XmlRpcIllFormedXmlException.cs" />
+    <Compile Include="XmlRpcUnsupportedMethodException.cs" />
+    <Compile Include="XmlRpcInvalidParametersException.cs" />
+    <Compile Include="XmlRpcNonRegularArrayException.cs" />
+    <Compile Include="XmlRpcInvalidXmlRpcException.cs" />
+    <Compile Include="XmlRpcMethodAttributeException.cs" />
+    <Compile Include="XmlRpcTypeMismatchException.cs" />
+    <Compile Include="XmlRpcNullReferenceException.cs" />
+    <Compile Include="XmlRpcServerException.cs" />
+    <Compile Include="XmlRpcInvalidReturnType.cs" />
+    <Compile Include="XmlRpcMappingSerializeException.cs" />
+    <Compile Include="XmlRpcNullParameterException.cs" />
+    <Compile Include="XmlRpcMissingUrl.cs" />
+    <Compile Include="XmlRpcDupXmlRpcMethodNames.cs" />
+    <Compile Include="XmlRpcNonSerializedMember.cs" />
+    <Compile Include="XmlRpcInvalidEnumValue.cs" />
+    <Compile Include="MappingAction.cs" />
+    <Compile Include="NullMappingAction.cs" />
+    <Compile Include="XmlRpcProxyCodeGenOptions.cs" />
+    <Compile Include="XmlRpcType.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

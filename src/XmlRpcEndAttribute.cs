@@ -25,42 +25,35 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  [AttributeUsage(AttributeTargets.Method)]
-  public class XmlRpcEndAttribute : Attribute
-  {
-    public XmlRpcEndAttribute()
+    [AttributeUsage(AttributeTargets.Method)]
+    public class XmlRpcEndAttribute : Attribute
     {
-    }
+        public XmlRpcEndAttribute() : this(string.Empty)
+        {
+        }
 
-    public XmlRpcEndAttribute(string method)
-    {
-      this.method = method;
-    }
+        public XmlRpcEndAttribute(string method)
+        {
+            _method = method ?? string.Empty;
+            Description = string.Empty;
+            Hidden = false;
+        }
 
-    public string Method 
-    {
-      get 
-      { return method; }
-    }
+        public string Method { get { return _method; } }
+        private readonly string _method;
 
-    public bool IntrospectionMethod 
-    {
-      get { return introspectionMethod; }
-      set { introspectionMethod = value; }
-    }
+        public bool IntrospectionMethod { get; set; }
 
-    public override string ToString()
-    {
-      string value = "Method : " + method;
-      return value;
-    }
+        public string Description { get; set; }
 
-    public string Description = "";
-    public bool Hidden = false;
-    private string method = "";
-    private bool introspectionMethod = false;
-  }
+        public bool Hidden { get; set; }
+
+        public override string ToString()
+        {
+            return  "Method : " + _method;
+        }
+    }
 }
 

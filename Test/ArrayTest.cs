@@ -1,14 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ArrayTest.cs" company="">
-//   
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using ntest;
 using NUnit.Framework;
+using Shouldly;
 
 namespace CookComputing.XmlRpc
 {
@@ -16,7 +10,8 @@ namespace CookComputing.XmlRpc
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class ArrayTest
     {
-        private const string ExpectedJagged = @"<value>
+        private const string ExpectedJagged = 
+@"<value>
   <array>
     <data>
       <value>
@@ -93,7 +88,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
 
-        private const string ExpectedEmptyArray = @"<value>
+        private const string ExpectedEmptyArray = 
+@"<value>
   <array>
     <data />
   </array>
@@ -103,61 +99,51 @@ namespace CookComputing.XmlRpc
         public void SerializeJagged()
         {
             var jagged = new[] { new int[] { }, new[] { 1 }, new[] { 2, 3 } };
-            var xml = Utils.SerializeValue(jagged, true);
-            Assert.AreEqual(ExpectedJagged, xml);
+
+            Utils
+                .SerializeValue(jagged, true)
+                .ShouldBe(ExpectedJagged);
         }
 
         [Test]
         public void DeserializeJagged()
         {
             var retVal = Utils.ParseValue(ExpectedJagged, typeof(int[][]));
-            Assert.IsInstanceOf<int[][]>(retVal);
-            var ret = (int[][])retVal;
-            Assert.IsTrue(ret[0].Length == 0);
-            Assert.IsTrue(ret[1].Length == 1);
-            Assert.IsTrue(ret[2].Length == 2);
-            Assert.AreEqual(1, ret[1][0]);
-            Assert.AreEqual(2, ret[2][0]);
-            Assert.AreEqual(3, ret[2][1]);
+            retVal.ShouldBeOfType<int[][]>();
+
+            ((int[][])retVal).ShouldBe(new[] { new int[] { }, new[] { 1 }, new[] { 2, 3 } });
         }
 
         [Test]
         public void SerializeMultiDim()
         {
             var multiDim = new[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
-            var xml = Utils.SerializeValue(multiDim, true);
-            Assert.AreEqual(ExpectedMultiDim, xml);
+            Utils.SerializeValue(multiDim, true).ShouldBe(ExpectedMultiDim);
         }
 
         [Test]
         public void DeserializeMultiDim()
         {
             var retVal = Utils.ParseValue(ExpectedMultiDim, typeof(int[,]));
-            Assert.IsInstanceOf<int[,]>(retVal);
-            var ret = (int[,])retVal;
-            Assert.AreEqual(1, ret[0, 0]);
-            Assert.AreEqual(2, ret[0, 1]);
-            Assert.AreEqual(3, ret[1, 0]);
-            Assert.AreEqual(4, ret[1, 1]);
-            Assert.AreEqual(5, ret[2, 0]);
-            Assert.AreEqual(6, ret[2, 1]);
+
+            retVal.ShouldBeOfType<int[,]>();
+            ((int[,])retVal).ShouldBe(new[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } });
         }
 
         [Test]
         public void SerializeEmpty()
         {
             var empty = new int[] { };
-            var xml = Utils.SerializeValue(empty, true);
-            Assert.AreEqual(ExpectedEmptyArray, xml);
+            Utils.SerializeValue(empty, true).ShouldBe(ExpectedEmptyArray);
         }
 
         [Test]
         public void DeserializeEmpty()
         {
             var retVal = Utils.ParseValue(ExpectedEmptyArray, typeof(int[]));
-            Assert.IsInstanceOf<int[]>(retVal);
-            var ret = (int[])retVal;
-            Assert.IsTrue(ret.Length == 0);
+            retVal.ShouldBeOfType<int[]>();
+
+            ((int[])retVal).ShouldBeEmpty();
         }
 
         // ---------------------- array -----------------------------------------// 
@@ -177,11 +163,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, null, MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[], "result is array of object");
-            var ret = obj as object[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual("Egypt", ret[1]);
-            Assert.AreEqual(false, ret[2]);
+            obj.ShouldBeOfType<object[]>();
+            obj.ShouldBe(new object[] { 12, "Egypt", false });
         }
 
         [Test]
@@ -200,11 +183,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, typeof(object[]), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[], "result is array of object");
-            var ret = obj as object[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual("Egypt", ret[1]);
-            Assert.AreEqual(false, ret[2]);
+            obj.ShouldBeOfType<object[]>();
+            obj.ShouldBe(new object[] { 12, "Egypt", false });
         }
 
         [Test]
@@ -223,11 +203,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, typeof(object), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[], "result is array of object");
-            var ret = obj as object[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual("Egypt", ret[1]);
-            Assert.AreEqual(false, ret[2]);
+            obj.ShouldBeOfType<object[]>();
+            obj.ShouldBe(new object[] { 12, "Egypt", false });
         }
 
         [Test]
@@ -246,11 +223,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, null, MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is int[], "result is array of int");
-            var ret = obj as int[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual(13, ret[1]);
-            Assert.AreEqual(14, ret[2]);
+            obj.ShouldBeOfType<int[]>();
+            obj.ShouldBe(new [] { 12, 13, 14 });
         }
 
         [Test]
@@ -269,11 +243,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, typeof(int[]), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is int[], "result is array of int");
-            var ret = obj as int[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual(13, ret[1]);
-            Assert.AreEqual(14, ret[2]);
+            obj.ShouldBeOfType<int[]>();
+            obj.ShouldBe(new [] { 12, 13, 14 });
         }
 
         [Test]
@@ -292,11 +263,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, typeof(object[]), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[], "result is array of object");
-            var ret = obj as object[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual(13, ret[1]);
-            Assert.AreEqual(14, ret[2]);
+            obj.ShouldBeOfType<object[]>();
+            obj.ShouldBe(new object[] { 12, 13, 14 });
         }
 
         [Test]
@@ -315,11 +283,8 @@ namespace CookComputing.XmlRpc
   </array>
 </value>";
             var obj = Utils.Parse(Xml, typeof(object), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is int[], "result is array of int");
-            var ret = obj as int[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual(13, ret[1]);
-            Assert.AreEqual(14, ret[2]);
+            obj.ShouldBeOfType<int[]>();
+            obj.ShouldBe(new [] { 12, 13, 14 });
         }
 
         [Test]
@@ -356,11 +321,13 @@ namespace CookComputing.XmlRpc
    </array>
  </value>";
             var obj = Utils.Parse(Xml, typeof(object[][]), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[][]);
+            obj.ShouldBeOfType<object[][]>();
+
             var ret = (object[][])obj;
-            Assert.AreEqual(1213028, ret[0][0]);
-            Assert.AreEqual("products", ret[0][1]);
-            Assert.AreEqual(666, ret[1][0]);
+            ret.ShouldSatisfyAllConditions(
+                () => ret[0][0].ShouldBe(1213028),
+                () => ret[0][1].ShouldBe("products"),
+                () => ret[1][0].ShouldBe(666));
         }
 
         // ---------------------- array -----------------------------------------// 
@@ -373,13 +340,11 @@ namespace CookComputing.XmlRpc
                 testary,
                 Encoding.UTF8,
                 new MappingActions { NullMappingAction = NullMappingAction.Ignore });
+            
             Type parsedType, parsedArrayType;
             var obj = Utils.Parse(xdoc, null, MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is object[], "result is array of object");
-            var ret = obj as object[];
-            Assert.AreEqual(12, ret[0]);
-            Assert.AreEqual("Egypt", ret[1]);
-            Assert.AreEqual(false, ret[2]);
+            obj.ShouldBeOfType<object[]>();
+            obj.ShouldBe(new object[] { 12, "Egypt", false });
         }
 
         // ---------------------- array -----------------------------------------// 
@@ -394,12 +359,8 @@ namespace CookComputing.XmlRpc
                 new MappingActions { NullMappingAction = NullMappingAction.Ignore });
             Type parsedType, parsedArrayType;
             var obj = Utils.Parse(xdoc, typeof(int[,]), MappingAction.Error, out parsedType, out parsedArrayType);
-            Assert.IsTrue(obj is int[,], "result is 2 dim array of int");
-            var ret = obj as int[,];
-            Assert.AreEqual(1, ret[0, 0]);
-            Assert.AreEqual(2, ret[0, 1]);
-            Assert.AreEqual(3, ret[1, 0]);
-            Assert.AreEqual(4, ret[1, 1]);
+            obj.ShouldBeOfType<int[,]>();
+            obj.ShouldBe(new[,] { { 1, 2 }, { 3, 4 } });
         }
     }
 }

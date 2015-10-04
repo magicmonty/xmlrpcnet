@@ -23,50 +23,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System.Security;
-
 namespace CookComputing.XmlRpc
 {
+    using System.Security;
     using System;
     using System.Runtime.Serialization;
 
-    // used to return server-side errors to client code - also can be 
+    // used to return server-side errors to client code - also can be
     // thrown by Service implmentation code to return custom Fault Responses
     [Serializable]
     public class XmlRpcFaultException : ApplicationException
     {
-        public XmlRpcFaultException(int theCode, string theString)
-            : base(string.Format("Server returned a fault exception: [{0}] {1}", theCode.ToString(), theString))
+        public XmlRpcFaultException(int faultCode, string faultString)
+            : base(string.Format("Server returned a fault exception: [{0}] {1}", faultCode, faultString))
         {
-            _faultCode = theCode;
-            _faultString = theString;
+            _faultCode = faultCode;
+            _faultString = faultString;
         }
 
         // deserialization constructor
         protected XmlRpcFaultException(
-          SerializationInfo info,
-          StreamingContext context)
+            SerializationInfo info,
+            StreamingContext context)
             : base(info, context)
         {
-            _faultCode = info.GetInt32("_faultCode");
-            _faultString = info.GetString("_faultString");
+            _faultCode = info.GetInt32("FaultCode");
+            _faultString = info.GetString("FaultString");
         }
 
         public int FaultCode { get { return _faultCode; } }
-
         private readonly int _faultCode;
 
         public string FaultString { get { return _faultString; } }
-
         private readonly string _faultString;
 
         [SecurityCritical]
         public override void GetObjectData(
-          SerializationInfo info,
-          StreamingContext context)
+            SerializationInfo info,
+            StreamingContext context)
         {
-            info.AddValue("_faultCode", _faultCode);
-            info.AddValue("_faultString", _faultString);
+            info.AddValue("FaultCode", _faultCode);
+            info.AddValue("FaultString", _faultString);
             base.GetObjectData(info, context);
         }
     }

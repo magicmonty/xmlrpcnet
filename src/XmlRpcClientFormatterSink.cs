@@ -34,165 +34,138 @@ using CookComputing.XmlRpc;
 
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcClientFormatterSink : IClientChannelSink, IMessageSink
-  {
-    // constructors
-    //
-    public XmlRpcClientFormatterSink(
-      IClientChannelSink NextSink)
+    public class XmlRpcClientFormatterSink : IClientChannelSink, IMessageSink
     {
-      m_next = NextSink;
-    }
+        public XmlRpcClientFormatterSink(IClientChannelSink NextSink)
+        {
+            _next = NextSink;
+        }
 
-    // properties
-    //
-    public IClientChannelSink NextChannelSink
-    {
-      get { return m_next; }
-    }
+        public IClientChannelSink NextChannelSink { get { return _next; } }
+        IClientChannelSink _next;
 
-    public IMessageSink NextSink
-    {
-      get {  throw new NotSupportedException(); }
-    }
-  
-    public IDictionary Properties
-    {
-      get {  return null; }
-    }
+        public IMessageSink NextSink {
+            get { throw new NotSupportedException(); }
+        }
 
-    //  public methods
-    //
-    public IMessageCtrl AsyncProcessMessage(
-      IMessage msg,
-      IMessageSink replySink)
-    {
-      throw new NotSupportedException();
-    }
+        public IDictionary Properties { get { return null; } }
 
-    public void AsyncProcessRequest(
-      IClientChannelSinkStack sinkStack,
-      IMessage msg,
-      ITransportHeaders headers,
-      Stream stream)
-    {
-      throw new Exception("not implemented");
-    }
+        public IMessageCtrl AsyncProcessMessage(
+            IMessage msg,
+            IMessageSink replySink)
+        {
+            throw new NotSupportedException();
+        }
 
-    public void AsyncProcessResponse(
-      IClientResponseChannelSinkStack sinkStack,
-      object state,
-      ITransportHeaders headers,
-      Stream stream)
-    {
-      throw new Exception("not implemented");
-    }
-  
-    public Stream GetRequestStream(
-      IMessage msg,
-      ITransportHeaders headers)
-    {
-      return null; // TODO: ??? 
-    }
-  
-    public void ProcessMessage(
-      IMessage msg,
-      ITransportHeaders requestHeaders,
-      Stream requestStream,
-      out ITransportHeaders responseHeaders,
-      out Stream responseStream)
-    {
-      responseHeaders = null;
-      responseStream = null;
-    }
-  
-    public IMessage SyncProcessMessage(
-      IMessage msg
-      )
-    {
-      IMethodCallMessage mcm = msg as IMethodCallMessage;
-      try
-      {
-        Stream reqStm = null;
-        ITransportHeaders reqHeaders = null;
-        SerializeMessage(mcm, ref reqHeaders, ref reqStm);
+        public void AsyncProcessRequest(
+            IClientChannelSinkStack sinkStack,
+            IMessage msg,
+            ITransportHeaders headers,
+            Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AsyncProcessResponse(
+            IClientResponseChannelSinkStack sinkStack,
+            object state,
+            ITransportHeaders headers,
+            Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stream GetRequestStream(
+            IMessage msg,
+            ITransportHeaders headers)
+        {
+            return null; // TODO: ??? 
+        }
+
+        public void ProcessMessage(
+            IMessage msg,
+            ITransportHeaders requestHeaders,
+            Stream requestStream,
+            out ITransportHeaders responseHeaders,
+            out Stream responseStream)
+        {
+            responseHeaders = null;
+            responseStream = null;
+        }
+
+        public IMessage SyncProcessMessage(IMessage msg)
+        {
+            var mcm = msg as IMethodCallMessage;
+            try {
+                Stream reqStm = null;
+                ITransportHeaders reqHeaders = null;
+                SerializeMessage(mcm, ref reqHeaders, ref reqStm);
         
-        Stream respStm = null;
-        ITransportHeaders respHeaders = null;
-        m_next.ProcessMessage(msg, reqHeaders, reqStm, 
-          out respHeaders, out respStm);
+                Stream respStm;
+                ITransportHeaders respHeaders;
+                _next.ProcessMessage(
+                    msg, 
+                    reqHeaders, 
+                    reqStm, 
+                    out respHeaders, 
+                    out respStm);
 
-        IMessage imsg = DeserializeMessage(mcm, respHeaders, respStm);
-        return imsg;
-      }
-      catch(Exception ex)
-      {
-        return new ReturnMessage(ex, mcm);
-      }
+                return DeserializeMessage(mcm, respStm);
+            }
+            catch (Exception ex) {
+                return new ReturnMessage(ex, mcm);
+            }
+        }
+
+        private static void SerializeMessage(
+            IMethodCallMessage mcm, 
+            ref ITransportHeaders headers, 
+            ref Stream stream)
+        {
+            var reqHeaders = new TransportHeaders();
+            reqHeaders["__Uri"] = mcm.Uri;
+            reqHeaders["Content-Type"] = "text/xml; charset=\"utf-8\"";
+            reqHeaders["__RequestVerb"] = "POST";
+
+            var mi = (MethodInfo)mcm.MethodBase;
+            var methodName = GetRpcMethodName(mi);
+            var xmlRpcReq = new XmlRpcRequest(methodName, mcm.InArgs);
+
+            // TODO: possibly call GetRequestStream from next sink in chain?
+            // TODO: SoapClientFormatter sink uses ChunkedStream - check why?
+            var stm = new MemoryStream();
+            var serializer = new XmlRpcRequestSerializer();
+            serializer.SerializeRequest(stm, xmlRpcReq);
+            stm.Position = 0;
+
+            headers = reqHeaders;
+            stream = stm;
+        }
+
+        private static IMessage DeserializeMessage(
+            IMethodCallMessage mcm,
+            Stream stream)
+        {
+            var deserializer = new XmlRpcResponseDeserializer();
+            var tp = mcm.MethodBase;
+            var mi = (MethodInfo)tp;
+            var t = mi.ReturnType;
+            var xmlRpcResp = deserializer.DeserializeResponse(stream, t);
+            return new ReturnMessage(xmlRpcResp.RetVal, null, 0, null, mcm);
+        }
+
+        private static string GetRpcMethodName(MemberInfo mi)
+        {
+            var attr = Attribute.GetCustomAttribute(mi, typeof(XmlRpcMethodAttribute)) as XmlRpcMethodAttribute;
+            var rpcMethod = string.Empty;
+            if (attr != null)
+                rpcMethod = attr.Method;
+            
+            if (string.IsNullOrEmpty(rpcMethod))
+                rpcMethod = mi.Name;
+
+            return rpcMethod;
+        }
+
     }
-
-    //  private methods
-    //
-    void SerializeMessage(
-      IMethodCallMessage mcm, 
-      ref ITransportHeaders headers, 
-      ref Stream stream)
-    {
-      ITransportHeaders reqHeaders = new TransportHeaders();
-      reqHeaders["__Uri"] = mcm.Uri;
-      reqHeaders["Content-Type"] = "text/xml; charset=\"utf-8\"";
-      reqHeaders["__RequestVerb"] = "POST";
-
-      MethodInfo mi = (MethodInfo) mcm.MethodBase;
-      string methodName = GetRpcMethodName(mi);
-      XmlRpcRequest xmlRpcReq = new XmlRpcRequest(methodName, mcm.InArgs);
-      // TODO: possibly call GetRequestStream from next sink in chain?
-      // TODO: SoapClientFormatter sink uses ChunkedStream - check why?
-      Stream stm = new MemoryStream();
-      var serializer = new XmlRpcRequestSerializer();
-      serializer.SerializeRequest(stm, xmlRpcReq);
-      stm.Position = 0;
-
-      headers = reqHeaders;
-      stream = stm;
-    }
-
-    IMessage DeserializeMessage(
-      IMethodCallMessage mcm,
-      ITransportHeaders headers,
-      Stream stream)
-    {
-      var deserializer = new XmlRpcResponseDeserializer();
-      object tp = mcm.MethodBase;           
-      System.Reflection.MethodInfo mi = (System.Reflection.MethodInfo)tp;
-      System.Type t = mi.ReturnType;
-      XmlRpcResponse xmlRpcResp = deserializer.DeserializeResponse(stream, t);
-      IMessage imsg = new ReturnMessage(xmlRpcResp.retVal, null, 0, null, mcm);
-      return imsg;
-    } 
-
-    string GetRpcMethodName(MethodInfo mi)
-    {
-      Attribute attr = Attribute.GetCustomAttribute(mi, 
-        typeof(XmlRpcMethodAttribute));
-      // TODO: do methods need attribute?
-      //      if (attr == null)
-      //      {
-      //        throw new Exception("missing method attribute");
-      //      }
-      string rpcMethod = "";
-      if (attr != null)
-      {
-        XmlRpcMethodAttribute xrmAttr = attr as XmlRpcMethodAttribute;
-        rpcMethod = xrmAttr.Method;
-      }
-      if (rpcMethod == "")
-        rpcMethod = mi.Name;
-      return rpcMethod;
-    }
-
-    // data 
-    //
-    IClientChannelSink m_next;
-  }
 }

@@ -27,59 +27,64 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.Collections;
-  using System.Globalization;
-  using System.IO;
-  using System.Reflection;
-  using System.Text;
-  using System.Text.RegularExpressions;
-  using System.Threading;
-  using System.Xml;
-  using System.Collections.Generic;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Xml;
 
-  public class XmlRpcResponseSerializer : XmlRpcSerializer
-  {
-    public XmlRpcResponseSerializer() { }
-    public XmlRpcResponseSerializer(XmlRpcFormatSettings settings) : base(settings) { }
-
-    public void SerializeResponse(Stream stm, XmlRpcResponse response)
+    public class XmlRpcResponseSerializer : XmlRpcSerializer
     {
-      Object ret = response.retVal;
-      if (ret is XmlRpcFaultException)
-      {
-        SerializeFaultResponse(stm, (XmlRpcFaultException)ret);
-        return;
-      }
-      XmlWriter xtw = XmlRpcXmlWriter.Create(stm, base.XmlRpcFormatSettings); 
-      xtw.WriteStartDocument();
-      xtw.WriteStartElement("", "methodResponse", "");
-      xtw.WriteStartElement("", "params", "");
-      xtw.WriteStartElement("", "param", "");
-      var mappingActions = new MappingActions();
-      mappingActions = GetTypeMappings(response.MethodInfo, mappingActions);
-      mappingActions = GetReturnMappingActions(response, mappingActions);
-      try
-      {
-        Serialize(xtw, ret, mappingActions);
-      }
-      catch (XmlRpcUnsupportedTypeException ex)
-      {
-        throw new XmlRpcInvalidReturnType(string.Format(
-          "Return value is of, or contains an instance of, type {0} which "
-          + "cannot be mapped to an XML-RPC type", ex.UnsupportedType));
-      }
-      WriteFullEndElement(xtw);
-      WriteFullEndElement(xtw);
-      WriteFullEndElement(xtw);
-      xtw.Flush();
-    }
+        public XmlRpcResponseSerializer()
+        {
+        }
 
-    MappingActions GetReturnMappingActions(XmlRpcResponse response,
-      MappingActions mappingActions)
-    {
-      var ri = response.MethodInfo != null ? response.MethodInfo.ReturnParameter : null;
-      return GetMappingActions(ri, mappingActions);
+        public XmlRpcResponseSerializer(XmlRpcFormatSettings settings) : base(settings)
+        {
+        }
+
+        public void SerializeResponse(Stream stm, XmlRpcResponse response)
+        {
+            var ret = response.RetVal;
+            var xmlRpcFaultException = ret as XmlRpcFaultException;
+            if (xmlRpcFaultException != null)
+            {
+                SerializeFaultResponse(stm, xmlRpcFaultException);
+                return;
+            }
+
+            var xtw = XmlRpcXmlWriter.Create(stm, XmlRpcFormatSettings); 
+            xtw.WriteStartDocument();
+            xtw.WriteStartElement("", "methodResponse", "");
+            xtw.WriteStartElement("", "params", "");
+            xtw.WriteStartElement("", "param", "");
+
+            var mappingActions = new MappingActions();
+            mappingActions = GetTypeMappings(response.MethodInfo, mappingActions);
+            mappingActions = GetReturnMappingActions(response, mappingActions);
+            try
+            {
+                Serialize(xtw, ret, mappingActions);
+            }
+            catch (XmlRpcUnsupportedTypeException ex)
+            {
+                throw new XmlRpcInvalidReturnType(
+                    string.Format(
+                        "Return value is of, or contains an instance of, type {0} which cannot be mapped to an XML-RPC type", 
+                        ex.UnsupportedType));
+            }
+
+            WriteFullEndElement(xtw);
+            WriteFullEndElement(xtw);
+            WriteFullEndElement(xtw);
+            xtw.Flush();
+        }
+
+        private static MappingActions GetReturnMappingActions(
+            XmlRpcResponse response,
+            MappingActions mappingActions)
+        {
+            var ri = response.MethodInfo != null ? response.MethodInfo.ReturnParameter : null;
+            return GetMappingActions(ri, mappingActions);
+        }
     }
-  }
 }

@@ -144,7 +144,7 @@ namespace CookComputing.XmlRpc
             Util.CopyStream(serStream, reqStream);
             reqStream.Flush();
             serStream.Position = 0;
-            OnRequest(new XmlRpcRequestEventArgs(req.proxyId, req.number,
+            OnRequest(new XmlRpcRequestEventArgs(req.ProxyId, req.number,
               serStream));
           }
         }
@@ -179,12 +179,12 @@ namespace CookComputing.XmlRpc
           }
           if (logging)
           {
-            OnResponse(new XmlRpcResponseEventArgs(req.proxyId, req.number,
+            OnResponse(new XmlRpcResponseEventArgs(req.ProxyId, req.number,
               deserStream));
             deserStream.Position = 0;
           }
           XmlRpcResponse resp = ReadResponse(req, webResp, deserStream);
-          reto = resp.retVal;
+          reto = resp.RetVal;
         }
         finally
         {
@@ -471,7 +471,7 @@ namespace CookComputing.XmlRpc
       }
       var deserializer = new XmlRpcResponseDeserializer();
       deserializer.NonStandard = _nonStandard;
-      Type retType = req.mi.ReturnType;
+      Type retType = req.Mi.ReturnType;
       XmlRpcResponse xmlRpcResp
         = deserializer.DeserializeResponse(respStm, req.ReturnType);
       return xmlRpcResp;
@@ -563,7 +563,7 @@ namespace CookComputing.XmlRpc
       SetClientCertificates(ClientCertificates, webReq);
 #endif
       XmlRpcAsyncResult asr = new XmlRpcAsyncResult(this, xmlRpcReq, XmlRpcFormatSettings, 
-        webReq, callback, outerAsyncState, 0);
+        webReq, callback, outerAsyncState);
       webReq.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback),
         asr);
       if (!asr.IsCompleted)
@@ -609,7 +609,7 @@ namespace CookComputing.XmlRpc
             reqStream.Flush();
             serStream.Position = 0;
             clientResult.ClientProtocol.OnRequest(
-              new XmlRpcRequestEventArgs(req.proxyId, req.number, serStream));
+              new XmlRpcRequestEventArgs(req.ProxyId, req.number, serStream));
           }
         }
         finally
@@ -782,7 +782,7 @@ namespace CookComputing.XmlRpc
         if (ResponseEvent != null)
         {
           OnResponse(new XmlRpcResponseEventArgs(
-            clientResult.XmlRpcRequest.proxyId,
+            clientResult.XmlRpcRequest.ProxyId,
             clientResult.XmlRpcRequest.number,
             responseStream));
           responseStream.Position = 0;
@@ -793,7 +793,7 @@ namespace CookComputing.XmlRpc
 #endif
         XmlRpcResponse resp = ReadResponse(clientResult.XmlRpcRequest,
           webResp, responseStream);
-        reto = resp.retVal;
+        reto = resp.RetVal;
       }
       finally
       {

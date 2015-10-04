@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
+using Shouldly;
 
 namespace CookComputing.XmlRpc
 
@@ -12,19 +13,18 @@ namespace CookComputing.XmlRpc
         [Test]
         public void SerializeRequestNil()
         {
-            Stream stm = new MemoryStream();
-            XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new Object[] { null, 1234567 };
-            req.method = "NilMethod";
-            req.mi = this.GetType().GetMethod("NilMethod");
+            var stm = new MemoryStream();
+            var req = new XmlRpcRequest();
+            req.Args = new Object[] { null, 1234567 };
+            req.Method = "NilMethod";
+            req.Mi = GetType().GetMethod("NilMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
-            TextReader tr = new StreamReader(stm);
-            string reqstr = tr.ReadToEnd();
-            Assert.AreEqual(
-              @"<?xml version=""1.0""?>
+            var tr = new StreamReader(stm);
+            tr.ReadToEnd().ShouldBe(
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>NilMethod</methodName>
     <params>
@@ -39,7 +39,7 @@ namespace CookComputing.XmlRpc
             </value>
         </param>
     </params>
-</methodCall>", reqstr);
+</methodCall>");
         }
 
         [XmlRpcMethod]
@@ -51,19 +51,18 @@ namespace CookComputing.XmlRpc
         [Test]
         public void SerializeRequestNilParams()
         {
-            Stream stm = new MemoryStream();
-            XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new Object[] { new object[] { 1, null, 2 } };
-            req.method = "NilParamsMethod";
-            req.mi = this.GetType().GetMethod("NilParamsMethod");
+            var stm = new MemoryStream();
+            var req = new XmlRpcRequest();
+            req.Args = new Object[] { new object[] { 1, null, 2 } };
+            req.Method = "NilParamsMethod";
+            req.Mi = GetType().GetMethod("NilParamsMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
-            TextReader tr = new StreamReader(stm);
-            string reqstr = tr.ReadToEnd();
-            Assert.AreEqual(
-              @"<?xml version=""1.0""?>
+            var tr = new StreamReader(stm);
+            tr.ReadToEnd().ShouldBe(
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>NilParamsMethod</methodName>
     <params>
@@ -83,26 +82,25 @@ namespace CookComputing.XmlRpc
             </value>
         </param>
     </params>
-</methodCall>", reqstr);
+</methodCall>");
         }
 
         [Test]
         public void SerializeRequestArrayWithNull()
         {
-            Stream stm = new MemoryStream();
-            XmlRpcRequest req = new XmlRpcRequest();
-            string[] array = new string[] { "AAA", null, "CCC" };
-            req.args = new Object[] { array };
-            req.method = "ArrayMethod";
-            req.mi = this.GetType().GetMethod("ArrayMethod");
+            var stm = new MemoryStream();
+            var req = new XmlRpcRequest();
+            var array = new [] { "AAA", null, "CCC" };
+            req.Args = new Object[] { array };
+            req.Method = "ArrayMethod";
+            req.Mi = GetType().GetMethod("ArrayMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
-            TextReader tr = new StreamReader(stm);
-            string reqstr = tr.ReadToEnd();
-            Assert.AreEqual(
-              @"<?xml version=""1.0""?>
+            var tr = new StreamReader(stm);
+            tr.ReadToEnd().ShouldBe(
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>ArrayMethod</methodName>
     <params>
@@ -124,7 +122,7 @@ namespace CookComputing.XmlRpc
             </value>
         </param>
     </params>
-</methodCall>", reqstr);
+</methodCall>");
         }
 
         public void ArrayMethod(string[] strings)
@@ -134,19 +132,18 @@ namespace CookComputing.XmlRpc
         [Test]
         public void SerializeRequestStructWithNil()
         {
-            Stream stm = new MemoryStream();
-            XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new Object[] { new Bounds() };
-            req.method = "NilMethod";
-            req.mi = this.GetType().GetMethod("NilMethod");
+            var stm = new MemoryStream();
+            var req = new XmlRpcRequest();
+            req.Args = new Object[] { new Bounds() };
+            req.Method = "NilMethod";
+            req.Mi = GetType().GetMethod("NilMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
-            TextReader tr = new StreamReader(stm);
-            string reqstr = tr.ReadToEnd();
-            Assert.AreEqual(
-              @"<?xml version=""1.0""?>
+            var tr = new StreamReader(stm);
+            tr.ReadToEnd().ShouldBe(
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>NilMethod</methodName>
     <params>
@@ -169,7 +166,7 @@ namespace CookComputing.XmlRpc
             </value>
         </param>
     </params>
-</methodCall>", reqstr);
+</methodCall>");
         }
 
         [XmlRpcNullMapping(NullMappingAction.Nil)]
@@ -186,19 +183,18 @@ namespace CookComputing.XmlRpc
         [Test]
         public void SerializeRequestStructArrayWithNil()
         {
-            Stream stm = new MemoryStream();
-            XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new Object[] { new StructWithArray { ints = new int?[] { 1, null, 3 } } };
-            req.method = "NilMethod";
-            req.mi = this.GetType().GetMethod("NilMethod");
+            var stm = new MemoryStream();
+            var req = new XmlRpcRequest();
+            req.Args = new Object[] { new StructWithArray { ints = new int?[] { 1, null, 3 } } };
+            req.Method = "NilMethod";
+            req.Mi = GetType().GetMethod("NilMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
-            TextReader tr = new StreamReader(stm);
-            string reqstr = tr.ReadToEnd();
-            Assert.AreEqual(
-              @"<?xml version=""1.0""?>
+            var tr = new StreamReader(stm);
+            tr.ReadToEnd().ShouldBe(
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>NilMethod</methodName>
     <params>
@@ -227,7 +223,7 @@ namespace CookComputing.XmlRpc
             </value>
         </param>
     </params>
-</methodCall>", reqstr);
+</methodCall>");
         }
 
         public void NilParamsMethod(params int?[] numbers)
@@ -237,9 +233,8 @@ namespace CookComputing.XmlRpc
         [Test]
         public void DeserializeNilObject()
         {
-            string xml = "<value><nil /></value>";
-            object o = Utils.ParseValue(xml, typeof(object));
-            Assert.IsNull(o);
+            const string Xml = "<value><nil /></value>";
+            Utils.ParseValue(Xml, typeof(object)).ShouldBeNull();
         }
     }
 

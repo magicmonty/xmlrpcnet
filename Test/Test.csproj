@@ -1,11 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6E73A11C-9595-4C6C-93C2-760BFEA37A1A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -57,6 +55,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,32 +76,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EnumStringInterfaceMapping.cs" />
-    <Compile Include="enumtest.cs" />
-    <Compile Include="enumtestserver.cs" />
-    <Compile Include="invoketest.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="ArrayTest.cs" />
     <Compile Include="Listener.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="listenertest.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="NilTest.cs" />
     <Compile Include="NilTestServer.cs" />
-    <Compile Include="optionalserializetest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="paramstest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="parsetest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="proxygentest.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="remotingservertest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -117,19 +97,46 @@
     <Compile Include="serviceinfotest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StateNameListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="StateNameService.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="XmlRpcParserTest.cs" />
     <Compile Include="XmlRpcStructTest.cs" />
     <Compile Include="XmlRpcType.cs" />
+    <Compile Include="TestHelpers\StateNameService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestHelpers\StateNameListnerService.cs" />
+    <Compile Include="TestHelpers\IStateNameDerived.cs" />
+    <Compile Include="TestHelpers\StateNameListnerDerivedService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestHelpers\StateNameServer.cs" />
+    <Compile Include="TestHelpers\IStateName.cs" />
+    <Compile Include="TestHelpers\StateStructRequest.cs" />
+    <Compile Include="TestHelpers\StateStructResponse.cs" />
+    <Compile Include="EnumTests.cs" />
+    <Compile Include="EnumTestServer.cs" />
+    <Compile Include="InvokeTests.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ListenerTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OptionalSerializeTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParamsTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParseTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProxyGenTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="TestHelpers\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -157,20 +164,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\samples\StateNameServer\interface\interface.csproj">
-      <Project>{D336462F-2F05-4B21-B616-BE7A0F8F8134}</Project>
-      <Name>interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\samples\StateNameServer\server\server.csproj">
-      <Project>{84AFB9E3-2694-46D6-AF0F-F4EE213F0CEC}</Project>
-      <Name>server</Name>
-    </ProjectReference>
     <ProjectReference Include="..\src\CookComputing.XmlRpc.csproj">
-      <Project>{1b4b0a58-0afb-4090-91dd-18912cc7de65}</Project>
+      <Project>{1B4B0A58-0AFB-4090-91DD-18912CC7DE65}</Project>
       <Name>CookComputing.XmlRpc</Name>
     </ProjectReference>
     <ProjectReference Include="..\xmlrpcserver\CookComputing.XmlRpcServer.csproj">
-      <Project>{7549fcd3-d436-44dc-a013-0d0630b7236b}</Project>
+      <Project>{7549FCD3-D436-44DC-A013-0D0630B7236B}</Project>
       <Name>CookComputing.XmlRpcServer</Name>
     </ProjectReference>
   </ItemGroup>
@@ -189,10 +188,30 @@
   </Target>
   -->
   <Choose>
-    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhone') Or ($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkIdentifier) == 'Silverlight') Or ($(TargetFrameworkIdentifier) == '.NETCore') Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch') Or ($(TargetFrameworkIdentifier) == 'Xamarin.iOS') Or ($(TargetFrameworkIdentifier) == 'Xamarin.Mac')">
+    <When Condition="($(TargetFrameworkIdentifier) == 'WindowsPhone') Or ($(TargetFrameworkIdentifier) == 'WindowsPhoneApp') Or ($(TargetFrameworkIdentifier) == 'Silverlight') Or ($(TargetFrameworkIdentifier) == '.NETCore') Or ($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>..\packages\NUnit\lib\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Shouldly">
+          <HintPath>..\packages\Shouldly\lib\net35\Shouldly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="($(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')) Or ($(TargetFrameworkIdentifier) == 'MonoAndroid') Or ($(TargetFrameworkIdentifier) == 'MonoTouch')">
+      <ItemGroup>
+        <Reference Include="Shouldly">
+          <HintPath>..\packages\Shouldly\lib\net40\Shouldly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -25,97 +25,51 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-  public class XmlRpcServiceAttribute : Attribute
-  {
-    public XmlRpcServiceAttribute()
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+    public class XmlRpcServiceAttribute : Attribute
     {
-    }
+        public XmlRpcServiceAttribute()
+        {
+            Description = string.Empty;
+            XmlEncoding = null;
+            Indentation = 2;
+            Introspection = false;
+            AutoDocumentation = true;
+            AutoDocVersion = true;
+            Name = string.Empty;
+            UseEmptyElementTags = true;
+            UseStringTag = true;
+            UseIndentation = true;
+            UseIntTag = false;
+        }
 
-    public bool AutoDocumentation
-    {    
-        get { return autoDocumentation; }
-        set { autoDocumentation = value; }
-    }
+        public bool AutoDocumentation { get; set; }
 
-    public bool AutoDocVersion
-    {    
-      get { return autoDocVersion; }
-      set { autoDocVersion = value; }
-    }
+        public bool AutoDocVersion { get; set; }
 
-    public string Description 
-    {
-      get { return description; }
-      set { description = value; }
-    }
+        public string Description { get; set; }
 
-    public int Indentation 
-    {
-      get { return indentation; }
-      set { indentation = value; }
-    }
+        public int Indentation { get; set; }
 
-    public bool Introspection
-    {
-      get { return introspection; }
-      set { introspection = value; }
-    }
+        public bool Introspection { get; set; }
 
-    public string Name 
-    {
-      get { return name; }
-      set { name = value; }
-    }
+        public string Name { get; set; }
 
-    public bool UseEmptyElementTags
-    {
-      get { return useEmptyElementTags; }
-      set { useEmptyElementTags = value; }
-    }
+        public bool UseEmptyElementTags { get; set; }
 
-    public bool UseIndentation
-    {
-      get { return useIndentation; }
-      set { useIndentation = value; }
-    }
+        public bool UseIndentation { get; set; }
 
-    public bool UseIntTag
-    {
-      get { return useIntTag; }
-      set { useIntTag = value; }
-    }
+        public bool UseIntTag { get; set; }
 
-    public bool UseStringTag
-    {
-      get { return useStringTag; }
-      set { useStringTag = value; }
-    }
+        public bool UseStringTag { get; set; }
 
-    public string XmlEncoding
-    {
-      get { return xmlEncoding; }
-      set { xmlEncoding = value; }
-    }
+        public string XmlEncoding { get; set; }
 
-    public override string ToString()
-    {
-      string value = "Description : " + description;
-      return value;
+        public override string ToString()
+        {
+            return "Description : " + Description;
+        }
     }
- 
-    private string description = "";
-    private string xmlEncoding = null;
-    private int indentation = 2;
-    private bool introspection = false;
-    private bool autoDocumentation = true;
-    private bool autoDocVersion = true;
-    private string name = "";
-    private bool useEmptyElementTags = true;
-    private bool useStringTag = true;
-    private bool useIndentation = true;
-    private bool useIntTag = false;
-  }
 }

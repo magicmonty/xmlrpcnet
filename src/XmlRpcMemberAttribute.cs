@@ -25,41 +25,28 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  [AttributeUsage(AttributeTargets.Field|AttributeTargets.Property)]
-  public class XmlRpcMemberAttribute : Attribute
-  {
-    public XmlRpcMemberAttribute()
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class XmlRpcMemberAttribute : Attribute
     {
-    }
+        public XmlRpcMemberAttribute() : this(string.Empty)
+        {
+        }
 
-    public XmlRpcMemberAttribute(string member)
-    {
-      _member = member;
-    }
+        public XmlRpcMemberAttribute(string member)
+        {
+            Member = member ?? string.Empty;
+            Description = string.Empty;
+        }
 
-    public string Member 
-    {
-      get 
-      { return _member; }
-      set
-      { _member = value; }
-    }
+        public string Member { get; set; }
 
-    public string Description 
-    {
-      get { return _description; }
-      set { _description = value; }
-    }
+        public string Description { get; set; }
 
-    public override string ToString()
-    {
-      string value = "Member : " + _member;
-      return value;
+        public override string ToString()
+        {
+            return "Member : " + Member;
+        }
     }
-
-    private string _member = "";
-    private string _description = "";
-  }
 }

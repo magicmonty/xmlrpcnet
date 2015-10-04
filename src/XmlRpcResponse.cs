@@ -28,24 +28,24 @@ using System.Reflection;
 
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcResponse
-  {	
-    public XmlRpcResponse()
+    public class XmlRpcResponse
     {
-      retVal = null;
-    }
-    public XmlRpcResponse(object retValue)
-    {
-      retVal = retValue;
-    }
+        public XmlRpcResponse() : this(null)
+        {
+        }
 
-    public XmlRpcResponse(object retValue, MethodInfo mi)
-    {
-      retVal = retValue;
-      MethodInfo = mi;
-    }
+        public XmlRpcResponse(object retValue) : this(retValue, null)
+        {
+        }
 
-    public Object retVal;
-    public MethodInfo MethodInfo { get; set; }
-  }    
+        public XmlRpcResponse(object retValue, MethodInfo mi)
+        {
+            RetVal = retValue;
+            MethodInfo = mi;
+        }
+
+        public Object RetVal { get; set; }
+
+        public MethodInfo MethodInfo { get; set; }
+    }
 }

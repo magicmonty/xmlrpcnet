@@ -2,4 +2,5 @@ source https://www.nuget.org/api/v2/
 
 nuget FAKE
 nuget NUnit 2.6.4 framework: >= net40
+nuget Shouldly
 nuget nunit.runners

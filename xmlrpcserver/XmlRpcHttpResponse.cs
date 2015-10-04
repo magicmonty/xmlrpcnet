@@ -28,45 +28,45 @@ using System.IO;
 
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcHttpResponse : CookComputing.XmlRpc.IHttpResponse
-  {
-    public XmlRpcHttpResponse(System.Web.HttpResponse response)
+    public class XmlRpcHttpResponse : IHttpResponse
     {
-      m_resp = response;
+        public XmlRpcHttpResponse(System.Web.HttpResponse response)
+        {
+            _resp = response;
+        }
+
+        string IHttpResponse.ContentType { 
+            get { return _resp.ContentType; } 
+            set { _resp.ContentType = value; } 
+        }
+
+        TextWriter IHttpResponse.Output {
+            get { return _resp.Output; }
+        }
+
+        Stream IHttpResponse.OutputStream {
+            get { return _resp.OutputStream; }
+        }
+
+        bool IHttpResponse.SendChunked {
+            get { return true; }
+            set { throw new NotImplementedException(); }
+        }
+
+        int IHttpResponse.StatusCode { 
+            get { return _resp.StatusCode; } 
+            set { _resp.StatusCode = value; } 
+        }
+
+        string IHttpResponse.StatusDescription { 
+            get { return _resp.StatusDescription; } 
+            set { _resp.StatusDescription = value; } 
+        }
+
+        Int64 IHttpResponse.ContentLength {
+            set { throw new NotImplementedException(); }
+        }
+
+        private System.Web.HttpResponse _resp;
     }
-
-    string IHttpResponse.ContentType 
-    { 
-      get { return m_resp.ContentType; } 
-      set { m_resp.ContentType = value; } 
-    }
-    TextWriter IHttpResponse.Output { get { return m_resp.Output; } }
-
-    Stream IHttpResponse.OutputStream { get { return m_resp.OutputStream; } }
-
-    bool IHttpResponse.SendChunked
-    {
-      get { return true; }
-      set { throw new NotImplementedException(); }
-    }
-
-    int IHttpResponse.StatusCode 
-    { 
-      get { return m_resp.StatusCode; } 
-      set { m_resp.StatusCode = value; } 
-    }
-
-    string IHttpResponse.StatusDescription 
-    { 
-      get { return m_resp.StatusDescription; } 
-      set { m_resp.StatusDescription = value; } 
-    }
-
-    Int64 IHttpResponse.ContentLength
-    {
-      set { throw new NotImplementedException(); }
-    }
-
-    private System.Web.HttpResponse m_resp;
-  }
 }

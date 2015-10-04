@@ -25,187 +25,168 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.Reflection;
-  using System.Text.RegularExpressions;
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
 
-  public class XmlRpcServiceInfo
-  {
-    public static XmlRpcServiceInfo CreateServiceInfo(Type type)
+    public class XmlRpcServiceInfo
     {
-      XmlRpcServiceInfo svcInfo = new XmlRpcServiceInfo();
-      // extract service info
-      XmlRpcServiceAttribute svcAttr = (XmlRpcServiceAttribute)
-        Attribute.GetCustomAttribute(type, typeof(XmlRpcServiceAttribute));
-      if (svcAttr != null && svcAttr.Description != "")
-        svcInfo.doc = svcAttr.Description;
-      if (svcAttr != null && svcAttr.Name != "")
-        svcInfo.Name = svcAttr.Name;
-      else
-        svcInfo.Name = type.Name;
-      // extract method info
-      var methods = new Dictionary<string, XmlRpcMethodInfo>();
+        private XmlRpcMethodInfo[] _methodInfos;
 
-      foreach (Type itf in type.GetInterfaces())
-      {
-        XmlRpcServiceAttribute itfAttr = (XmlRpcServiceAttribute)
-          Attribute.GetCustomAttribute(itf, typeof(XmlRpcServiceAttribute));
-        if (itfAttr != null)
-          svcInfo.doc = itfAttr.Description;
-#if (!COMPACT_FRAMEWORK)
-        InterfaceMapping imap = type.GetInterfaceMap(itf);
-        foreach (MethodInfo mi in imap.InterfaceMethods)
+        public static XmlRpcServiceInfo CreateServiceInfo(Type type)
         {
-          ExtractMethodInfo(methods, mi, itf);
+            var svcInfo = new XmlRpcServiceInfo();
+            // extract service info
+            var svcAttr = Attribute.GetCustomAttribute(type, typeof(XmlRpcServiceAttribute)) as XmlRpcServiceAttribute;
+            if (svcAttr != null && !string.IsNullOrEmpty(svcAttr.Description))
+                svcInfo.Doc = svcAttr.Description;
+            
+            if (svcAttr != null && !string.IsNullOrEmpty(svcAttr.Name))
+                svcInfo.Name = svcAttr.Name;
+            else
+                svcInfo.Name = type.Name;
+            
+            // extract method info
+            var methods = new Dictionary<string, XmlRpcMethodInfo>();
+
+            foreach (Type itf in type.GetInterfaces())
+            {
+                var itfAttr = Attribute.GetCustomAttribute(itf, typeof(XmlRpcServiceAttribute)) as XmlRpcServiceAttribute;
+                if (itfAttr != null)
+                    svcInfo.Doc = itfAttr.Description;
+                
+                var imap = type.GetInterfaceMap(itf);
+                foreach (var mi in imap.InterfaceMethods)
+                    ExtractMethodInfo(methods, mi, itf);
+            }
+
+            foreach (var mi in type.GetMethods())
+            {
+                var mthds = new List<MethodInfo>();
+                mthds.Add(mi);
+
+                var curMi = mi;
+                while (true)
+                {
+                    var baseMi = curMi.GetBaseDefinition();
+                    if (baseMi.DeclaringType == curMi.DeclaringType)
+                        break;
+
+                    mthds.Insert(0, baseMi);
+                    curMi = baseMi;
+                }
+
+                foreach (var mthd in mthds)
+                    ExtractMethodInfo(methods, mthd, type);
+            }
+
+            svcInfo._methodInfos = new XmlRpcMethodInfo[methods.Count];
+            methods.Values.CopyTo(svcInfo._methodInfos, 0);
+            Array.Sort(svcInfo._methodInfos);
+            return svcInfo;
         }
-#else
-        foreach (MethodInfo mi in itf.GetMethods())
+
+        public MethodInfo GetMethodInfo(string xmlRpcMethodName)
         {
-          ExtractMethodInfo(methods, mi, itf);
-        }
-#endif
-      }
+            foreach (var xmi in _methodInfos)
+            {
+                if (xmlRpcMethodName == xmi.XmlRpcName)
+                    return xmi.MethodInfo;
+            }
 
-      foreach (MethodInfo mi in type.GetMethods())
-      {
-        var mthds = new List<MethodInfo>();
-        mthds.Add(mi);
-        MethodInfo curMi = mi;
-        while (true)
+            return null;
+        }
+
+        private static void ExtractMethodInfo(
+            IDictionary<string, XmlRpcMethodInfo> methods, 
+            MethodInfo mi, 
+            MemberInfo type)
         {
-          MethodInfo baseMi = curMi.GetBaseDefinition();
-          if (baseMi.DeclaringType == curMi.DeclaringType)
-            break;
-          mthds.Insert(0, baseMi);
-          curMi = baseMi;
+            var attr = Attribute.GetCustomAttribute(mi, typeof(XmlRpcMethodAttribute)) as XmlRpcMethodAttribute;
+            if (attr == null)
+                return;
+            
+            var mthdInfo = new XmlRpcMethodInfo();
+            mthdInfo.MethodInfo = mi;
+            mthdInfo.XmlRpcName = XmlRpcTypeInfo.GetXmlRpcMethodName(mi);
+            mthdInfo.MiName = mi.Name;
+            mthdInfo.Doc = attr.Description;
+            mthdInfo.IsHidden = attr.IntrospectionMethod | attr.Hidden;
+
+            // extract parameters information
+            var parmList = new List<XmlRpcParameterInfo>();
+            var parms = mi.GetParameters();
+            foreach (var parm in parms)
+            {
+                var parmInfo = new XmlRpcParameterInfo();
+                parmInfo.Name = parm.Name;
+                parmInfo.Type = parm.ParameterType;
+                parmInfo.XmlRpcType = XmlRpcTypeInfo.GetXmlRpcTypeString(parm.ParameterType);
+
+                // retrieve optional attributed info
+                parmInfo.Doc = string.Empty;
+                var pattr = Attribute.GetCustomAttribute(parm, typeof(XmlRpcParameterAttribute)) as XmlRpcParameterAttribute;
+
+                if (pattr != null)
+                {
+                    parmInfo.Doc = pattr.Description;
+                    parmInfo.XmlRpcName = pattr.Name;
+                }
+
+                parmInfo.IsParams = Attribute.IsDefined(parm, typeof(ParamArrayAttribute));
+                parmList.Add(parmInfo);
+            }
+
+            mthdInfo.Parameters = parmList.ToArray();
+
+            // extract return type information
+            mthdInfo.ReturnType = mi.ReturnType;
+            mthdInfo.ReturnXmlRpcType = XmlRpcTypeInfo.GetXmlRpcTypeString(mi.ReturnType);
+            var orattrs = mi.ReturnTypeCustomAttributes.GetCustomAttributes(typeof(XmlRpcReturnValueAttribute), false);
+            if (orattrs.Length > 0)
+                mthdInfo.ReturnDoc = ((XmlRpcReturnValueAttribute)orattrs[0]).Description;
+
+            if (methods.ContainsKey(mthdInfo.XmlRpcName))
+            {
+                throw new XmlRpcDupXmlRpcMethodNames(
+                    string.Format(
+                        "Method {0} in type {1} has duplicate XmlRpc method name {2}",
+                        mi.Name, 
+                        type.Name, 
+                        mthdInfo.XmlRpcName));
+            }
+            else
+                methods.Add(mthdInfo.XmlRpcName, mthdInfo);
         }
-        foreach (MethodInfo mthd in mthds)
+
+        public string GetMethodName(string XmlRpcMethodName)
         {
-          ExtractMethodInfo(methods, mthd, type);
-        }
-      }
-      svcInfo.methodInfos = new XmlRpcMethodInfo[methods.Count];
-      methods.Values.CopyTo(svcInfo.methodInfos, 0);
-      Array.Sort(svcInfo.methodInfos);
-      return svcInfo;
-    }
+            foreach (var methodInfo in _methodInfos)
+            {
+                if (string.Equals(methodInfo.XmlRpcName, XmlRpcMethodName, StringComparison.Ordinal))
+                    return methodInfo.MiName;
+            }
 
-    public MethodInfo GetMethodInfo(string xmlRpcMethodName)
-    {
-      foreach (XmlRpcMethodInfo xmi in methodInfos)
-      {
-        if (xmlRpcMethodName == xmi.XmlRpcName)
+            return null;
+        }
+
+        public String Doc { get; set; }
+
+        public String Name { get; set; }
+
+        public XmlRpcMethodInfo[] Methods { get { return _methodInfos; } }
+
+        public XmlRpcMethodInfo GetMethod(string methodName)
         {
-          return xmi.MethodInfo;
+            foreach (var mthdInfo in _methodInfos)
+            {
+                if (mthdInfo.XmlRpcName == methodName)
+                    return mthdInfo;
+            }
+
+            return null;
         }
-      }
-      return null;
+
+        private XmlRpcServiceInfo() { }
     }
-
-    static void ExtractMethodInfo(Dictionary<string, XmlRpcMethodInfo> methods, 
-      MethodInfo mi, Type type)
-    {
-      XmlRpcMethodAttribute attr = (XmlRpcMethodAttribute)
-        Attribute.GetCustomAttribute(mi,
-        typeof(XmlRpcMethodAttribute));
-      if (attr == null)
-        return;
-      XmlRpcMethodInfo mthdInfo = new XmlRpcMethodInfo();
-      mthdInfo.MethodInfo = mi;
-      mthdInfo.XmlRpcName = XmlRpcTypeInfo.GetXmlRpcMethodName(mi);
-      mthdInfo.MiName = mi.Name;
-      mthdInfo.Doc = attr.Description;
-      mthdInfo.IsHidden = attr.IntrospectionMethod | attr.Hidden;
-      // extract parameters information
-      var parmList = new List<XmlRpcParameterInfo>();
-      ParameterInfo[] parms = mi.GetParameters();
-      foreach (ParameterInfo parm in parms)
-      {
-        XmlRpcParameterInfo parmInfo = new XmlRpcParameterInfo();
-        parmInfo.Name = parm.Name;
-        parmInfo.Type = parm.ParameterType;
-        parmInfo.XmlRpcType = XmlRpcTypeInfo.GetXmlRpcTypeString(parm.ParameterType);
-        // retrieve optional attributed info
-        parmInfo.Doc = "";
-        XmlRpcParameterAttribute pattr = (XmlRpcParameterAttribute)
-          Attribute.GetCustomAttribute(parm,
-          typeof(XmlRpcParameterAttribute));
-        if (pattr != null)
-        {
-          parmInfo.Doc = pattr.Description;
-          parmInfo.XmlRpcName = pattr.Name;
-        }
-        parmInfo.IsParams = Attribute.IsDefined(parm,
-          typeof(ParamArrayAttribute));
-        parmList.Add(parmInfo);
-      }
-      mthdInfo.Parameters = parmList.ToArray();
-      // extract return type information
-      mthdInfo.ReturnType = mi.ReturnType;
-      mthdInfo.ReturnXmlRpcType = XmlRpcTypeInfo.GetXmlRpcTypeString(mi.ReturnType);
-      object[] orattrs = mi.ReturnTypeCustomAttributes.GetCustomAttributes(
-        typeof(XmlRpcReturnValueAttribute), false);
-      if (orattrs.Length > 0)
-      {
-        mthdInfo.ReturnDoc = ((XmlRpcReturnValueAttribute)orattrs[0]).Description;
-      }
-
-      if (methods.ContainsKey(mthdInfo.XmlRpcName))
-      {
-        throw new XmlRpcDupXmlRpcMethodNames(String.Format("Method "
-          + "{0} in type {1} has duplicate XmlRpc method name {2}",
-          mi.Name, type.Name, mthdInfo.XmlRpcName));
-      }
-      else
-        methods.Add(mthdInfo.XmlRpcName, mthdInfo);
-    }
-
-    public string GetMethodName(string XmlRpcMethodName)
-    {
-      foreach (XmlRpcMethodInfo methodInfo in methodInfos)
-      {
-        if (methodInfo.XmlRpcName == XmlRpcMethodName)
-          return methodInfo.MiName;
-      }
-      return null;
-    }
-
-    public String Doc
-    {
-      get { return doc; }
-      set { doc = value; }
-    }
-
-    public String Name
-    {
-      get { return name; }
-      set { name = value; }
-    }
-
-    public XmlRpcMethodInfo[] Methods
-    {
-      get { return methodInfos; }
-    }
-
-    public XmlRpcMethodInfo GetMethod(
-      String methodName)
-    {
-      foreach (XmlRpcMethodInfo mthdInfo in methodInfos)
-      {
-        if (mthdInfo.XmlRpcName == methodName)
-          return mthdInfo;
-      }
-      return null;
-    }
-
-    private XmlRpcServiceInfo()
-    {
-    }
-
-    XmlRpcMethodInfo[] methodInfos;
-    String doc;
-    string name;
-  }
 }

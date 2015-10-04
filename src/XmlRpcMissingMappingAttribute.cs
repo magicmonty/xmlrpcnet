@@ -25,39 +25,28 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  public enum MappingAction 
-  {
-    Ignore,
-    Error,
-  }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Struct
-     | AttributeTargets.Property | AttributeTargets.Class)]
-  public class XmlRpcMissingMappingAttribute : Attribute
-  {
-    public XmlRpcMissingMappingAttribute()
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Struct
+    | AttributeTargets.Property | AttributeTargets.Class)]
+    public class XmlRpcMissingMappingAttribute : Attribute
     {
-    }
+        public XmlRpcMissingMappingAttribute() : this(MappingAction.Error)
+        {
+        }
 
-    public XmlRpcMissingMappingAttribute(MappingAction action)
-    {
-      _action = action;
-    }
+        public XmlRpcMissingMappingAttribute(MappingAction action)
+        {
+            _action = action;
+        }
 
-    public MappingAction Action 
-    {
-      get 
-      { return _action; }
-    }
+        public MappingAction Action { get { return _action; } }
 
-    public override string ToString()
-    {
-      string value = _action.ToString();
-      return value;
-    }
+        private readonly MappingAction _action;
 
-    private MappingAction _action = MappingAction.Error;
-  }
+        public override string ToString()
+        {
+            return _action.ToString();
+        }
+    }
 }

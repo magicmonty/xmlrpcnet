@@ -25,48 +25,49 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.IO;
-  using System.Reflection;
+    using System;
+    using System.Reflection;
 
-  public class XmlRpcRequest
-  {	
-    public XmlRpcRequest()
+    public class XmlRpcRequest
     {
-    }
+        public XmlRpcRequest() : this(null, null, null)
+        {
+        }
 
-    public XmlRpcRequest(string methodName, object[] parameters, MethodInfo methodInfo)
-    {
-      method = methodName;
-      args = parameters;
-      mi = methodInfo;
-    }
+        public XmlRpcRequest(string methodName, object[] parameters, MethodInfo methodInfo)
+            : this(methodName, parameters, methodInfo, null, default(Guid))
+        {
+        }
 
-    public XmlRpcRequest(string methodName, object[] parameters, 
-      MethodInfo methodInfo, string XmlRpcMethod, Guid proxyGuid)
-    {
-      method = methodName;
-      args = parameters;
-      mi = methodInfo;
-      if (XmlRpcMethod != null)
-        method = XmlRpcMethod;
-      proxyId = proxyGuid;
-      if (mi != null)
-        ReturnType = mi.ReturnType;
-    }
+        public XmlRpcRequest(
+            string methodName, 
+            object[] parameters, 
+            MethodInfo methodInfo, 
+            string XmlRpcMethod, 
+            Guid proxyGuid)
+        {
+            Method = methodName;
+            Args = parameters;
+            Mi = methodInfo;
 
-    public XmlRpcRequest(string methodName, Object[] parameters)
-    {
-      method = methodName;
-      args = parameters;
-    }
+            if (XmlRpcMethod != null)
+                Method = XmlRpcMethod;
+            
+            ProxyId = proxyGuid;
+            if (Mi != null)
+                ReturnType = Mi.ReturnType;
+        }
 
-    public String method = null;
-    public Object[] args = null;
-    public MethodInfo mi = null;
-    public Guid proxyId;
-    static int _created;
-    public int number = System.Threading.Interlocked.Increment(ref _created);
-    public Type ReturnType;
-  }    
+        public XmlRpcRequest(string methodName, Object[] parameters) : this(methodName, parameters, null, null, default(Guid))
+        {
+        }
+
+        public String Method;
+        public Object[] Args;
+        public MethodInfo Mi;
+        public Guid ProxyId;
+        private static int _created;
+        public int number = System.Threading.Interlocked.Increment(ref _created);
+        public Type ReturnType;
+    }
 }

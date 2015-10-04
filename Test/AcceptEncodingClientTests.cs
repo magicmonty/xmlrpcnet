@@ -1,15 +1,9 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="acceptencodingclient.cs" company="">
-//   
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
 using System.IO;
 using System.Net;
 using System.Threading;
 using NUnit.Framework;
-
-#if !FX1_0
+using CookComputing.XmlRpc.TestHelpers;
+using Shouldly;
 
 namespace CookComputing.XmlRpc
 {
@@ -25,7 +19,7 @@ namespace CookComputing.XmlRpc
         [TestFixtureSetUp]
         public void Setup()
         {
-            _lstner = new System.Net.HttpListener();
+            _lstner = new HttpListener();
             _lstner.Prefixes.Add("http://127.0.0.1:11002/");
             var thrd = new Thread(Run);
             _running = true;
@@ -37,9 +31,8 @@ namespace CookComputing.XmlRpc
         {
             try
             {
-                while (_running)
-                {
-                    const string Xml = @"<?xml version=""1.0"" ?> 
+                const string Xml = 
+@"<?xml version=""1.0""?> 
 <methodResponse>
   <params>
     <param>
@@ -47,7 +40,9 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodResponse>";
-
+                
+                while (_running)
+                {
                     var context = _lstner.GetContext();
                     switch (_encoding)
                     {
@@ -106,7 +101,7 @@ namespace CookComputing.XmlRpc
             var proxy = XmlRpcProxyGen.Create<IStateName>();
             proxy.Url = "http://127.0.0.1:11002/";
             proxy.EnableCompression = true;
-            var name = proxy.GetStateName(1);
+            proxy.GetStateName(1).ShouldBe("Alabama");
         }
 
         [Test]
@@ -116,9 +111,7 @@ namespace CookComputing.XmlRpc
             var proxy = XmlRpcProxyGen.Create<IStateName>();
             proxy.Url = "http://127.0.0.1:11002/";
             proxy.EnableCompression = true;
-            var name = proxy.GetStateName(1);
+            proxy.GetStateName(1).ShouldBe("Alabama");
         }
     }
 }
-
-#endif

@@ -23,22 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System;
 using System.IO;
 
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcHttpRequest : CookComputing.XmlRpc.IHttpRequest
-  {
-    public XmlRpcHttpRequest(System.Web.HttpRequest request)
+    public class XmlRpcHttpRequest : IHttpRequest
     {
-      m_req = request;
+        private readonly System.Web.HttpRequest _req;
+
+        public XmlRpcHttpRequest(System.Web.HttpRequest request)
+        {
+            _req = request;
+        }
+
+        public Stream InputStream { get { return _req.InputStream; } }
+
+        public string HttpMethod { get { return _req.HttpMethod; } }
     }
-
-    public Stream InputStream { get { return m_req.InputStream; } }
-
-    public string HttpMethod { get { return m_req.HttpMethod; } }
-
-    private System.Web.HttpRequest m_req;
-  }
 }

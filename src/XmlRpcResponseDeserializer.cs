@@ -28,11 +28,9 @@ DEALINGS IN THE SOFTWARE.
 namespace CookComputing.XmlRpc
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml;
-
 
     struct Fault
     {
@@ -45,21 +43,23 @@ namespace CookComputing.XmlRpc
         public XmlRpcResponse DeserializeResponse(Stream stm, Type svcType)
         {
             if (stm == null)
-                throw new ArgumentNullException("stm",
-                  "XmlRpcSerializer.DeserializeResponse");
+                throw new ArgumentNullException(
+                    "stm",
+                    "XmlRpcSerializer.DeserializeResponse");
+            
             if (AllowInvalidHttpContent)
             {
-                Stream newStm = new MemoryStream();
+                var newStm = new MemoryStream();
                 Util.CopyStream(stm, newStm);
                 stm = newStm;
                 stm.Position = 0;
                 while (true)
                 {
                     // for now just strip off any leading CR-LF characters
-                    int byt = stm.ReadByte();
+                    var byt = stm.ReadByte();
                     if (byt == -1)
                         throw new XmlRpcIllFormedXmlException(
-                          "Response from server does not contain valid XML.");
+                            "Response from server does not contain valid XML.");
                     if (byt != 0x0d && byt != 0x0a && byt != ' ' && byt != '\t')
                     {
                         stm.Position = stm.Position - 1;
@@ -67,6 +67,7 @@ namespace CookComputing.XmlRpc
                     }
                 }
             }
+
             XmlReader xmlRdr = XmlRpcXmlReader.Create(stm);
             return DeserializeResponse(xmlRdr, svcType);
         }
@@ -74,9 +75,11 @@ namespace CookComputing.XmlRpc
         public XmlRpcResponse DeserializeResponse(TextReader txtrdr, Type svcType)
         {
             if (txtrdr == null)
-                throw new ArgumentNullException("txtrdr",
-                  "XmlRpcSerializer.DeserializeResponse");
-            XmlReader xmlRdr = XmlRpcXmlReader.Create(txtrdr);
+                throw new ArgumentNullException(
+                    "txtrdr",
+                    "XmlRpcSerializer.DeserializeResponse");
+
+            var xmlRdr = XmlRpcXmlReader.Create(txtrdr);
             return DeserializeResponse(xmlRdr, svcType);
         }
 
@@ -84,21 +87,21 @@ namespace CookComputing.XmlRpc
         {
             try
             {
-
-                IEnumerator<Node> iter = new XmlRpcParser().ParseResponse(rdr).GetEnumerator();
+                var iter = new XmlRpcParser().ParseResponse(rdr).GetEnumerator();
                 iter.MoveNext();
                 if (iter.Current is FaultNode)
-                {
-                    var xmlRpcException = DeserializeFault(iter);
-                    throw xmlRpcException;
-                }
+                    throw DeserializeFault(iter);
+                
                 if (returnType == typeof(void) || !iter.MoveNext())
-                    return new XmlRpcResponse { retVal = null };
-                var valueNode = iter.Current as ValueNode;
-                object retObj = MapValueNode(iter, returnType, new MappingStack("response"),
-                  MappingAction.Error);
-                var response = new XmlRpcResponse { retVal = retObj };
-                return response;
+                    return new XmlRpcResponse { RetVal = null };
+
+                var retObj = MapValueNode(
+                    iter,
+                    returnType,
+                    new MappingStack("response"),
+                    MappingAction.Error);
+                
+                return new XmlRpcResponse { RetVal = retObj };
             }
             catch (XmlException ex)
             {
@@ -108,32 +111,37 @@ namespace CookComputing.XmlRpc
 
         private XmlRpcException DeserializeFault(IEnumerator<Node> iter)
         {
-            MappingStack faultStack = new MappingStack("fault response");
             // TODO: use global action setting
-            MappingAction mappingAction = MappingAction.Error;
-            XmlRpcFaultException faultEx = ParseFault(iter, faultStack, // TODO: fix
-              mappingAction);
-            throw faultEx;
+            throw ParseFault(
+                iter, 
+                new MappingStack("fault response"), // TODO: fix
+                MappingAction.Error);
         }
 
         XmlRpcFaultException ParseFault(
-        IEnumerator<Node> iter,
-        MappingStack parseStack,
-        MappingAction mappingAction)
+            IEnumerator<Node> iter,
+            MappingStack parseStack,
+            MappingAction mappingAction)
         {
             iter.MoveNext();  // move to StructValue
             Type parsedType;
-            var faultStruct = MapHashtable(iter, parseStack, mappingAction,
-              out parsedType) as XmlRpcStruct;
-            object faultCode = faultStruct["FaultCode"];
-            object faultString = faultStruct["FaultString"];
-            if (faultCode is string)
+            var faultStruct = MapHashtable(
+                iter, 
+                parseStack, 
+                mappingAction,
+                out parsedType) as XmlRpcStruct;
+            
+            var faultCode = faultStruct["FaultCode"];
+            var faultString = faultStruct["FaultString"];
+            var str = faultCode as string;
+            if (str != null)
             {
                 int value;
-                if (!Int32.TryParse(faultCode as string, out value))
+                if (!Int32.TryParse(str, out value))
                     throw new XmlRpcInvalidXmlRpcException("faultCode not int or string");
                 faultCode = value;
             }
+
             return new XmlRpcFaultException((int)faultCode, (string)faultString);
         }
 
@@ -148,7 +156,6 @@ namespace CookComputing.XmlRpc
             public string FaultCode;
             public string FaultString;
         }
-
     }
 }
 

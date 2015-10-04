@@ -23,33 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#if !FX1_0
-
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.IO;
-  using System.Net;
+    using System.IO;
+    using System.Net;
 
-  public class XmlRpcListenerRequest : CookComputing.XmlRpc.IHttpRequest
-  {
-    public XmlRpcListenerRequest(HttpListenerRequest request)
+    public class XmlRpcListenerRequest : IHttpRequest
     {
-      _request = request;
-    }
+        private readonly HttpListenerRequest _request;
 
-    public Stream InputStream
-    {
-      get { return _request.InputStream; }
-    }
+        public XmlRpcListenerRequest(HttpListenerRequest request)
+        {
+            _request = request;
+        }
 
-    public string HttpMethod
-    {
-      get { return _request.HttpMethod; }
-    }
+        public Stream InputStream { get { return _request.InputStream; } }
 
-    private HttpListenerRequest _request;
-  }
+        public string HttpMethod { get { return _request.HttpMethod; } }
+    }
 }
-
-#endif

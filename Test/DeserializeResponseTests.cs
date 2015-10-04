@@ -28,7 +28,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -51,7 +51,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(int));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -74,7 +74,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -97,7 +97,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(int));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -145,7 +145,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is string, "retval is string");
             Assert.AreEqual((string)o, "test string", "retval is 'test string'");
@@ -168,7 +168,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is string, "retval is string");
             Assert.AreEqual((string)o, "test string", "retval is 'test string'");
@@ -191,7 +191,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(string));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is string, "retval is string");
             Assert.AreEqual((string)o, "test string", "retval is 'test string'");
@@ -214,7 +214,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(string));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is string, "retval is string");
             Assert.AreEqual((string)o, "test string", "retval is 'test string'");
@@ -262,7 +262,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(string));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is string, "retval is string");
             Assert.AreEqual((string)o, string.Empty, "retval is empty string");
@@ -287,7 +287,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.MapZerosDateTimeToMinValue;
             var response = deserializer.DeserializeResponse(sr, typeof(DateTime));
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is DateTime, "retval is string");
             Assert.AreEqual((DateTime)o, DateTime.MinValue, "DateTime.MinValue");
         }
@@ -310,7 +310,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.MapZerosDateTimeToMinValue;
             var response = deserializer.DeserializeResponse(sr, typeof(DateTime));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is DateTime, "retval is string");
             Assert.AreEqual((DateTime)o, DateTime.MinValue, "DateTime.MinValue");
         }
@@ -333,7 +333,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.MapZerosDateTimeToMinValue;
             var response = deserializer.DeserializeResponse(sr, typeof(DateTime));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is DateTime, "retval is string");
             Assert.AreEqual((DateTime)o, DateTime.MinValue, "DateTime.MinValue");
         }
@@ -356,7 +356,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.MapZerosDateTimeToMinValue;
             var response = deserializer.DeserializeResponse(sr, typeof(DateTime));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is DateTime, "retval is string");
             Assert.AreEqual((DateTime)o, DateTime.MinValue, "DateTime.MinValue");
         }
@@ -421,7 +421,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(object));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             var ret = (string)((XmlRpcStruct)o)["key3"];
             Assert.AreEqual("this is a test", ret);
             var ret2 = (string)((XmlRpcStruct)o)["key4"];
@@ -454,7 +454,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(XmlRpcStruct));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             var ret = (string)((XmlRpcStruct)o)["key3"];
             Assert.AreEqual("this is a test", ret);
         }
@@ -493,7 +493,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is XmlRpcStruct, "retval is XmlRpcStruct");
             var xrs = (XmlRpcStruct)o;
             Assert.IsTrue(xrs.Count == 1, "retval contains one entry");
@@ -545,7 +545,7 @@ namespace CookComputing.XmlRpc
             var sr = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
-            var o = response.retVal;
+            var o = response.RetVal;
         }
 
         public struct InternalStruct
@@ -598,7 +598,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(MyStruct));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is MyStruct, "retval is MyStruct");
             var mystr = (MyStruct)o;
             Assert.AreEqual(mystr.Version, "1.6", "version is 1.6");
@@ -624,7 +624,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(int));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is int, "retval is int");
             var myint = (int)o;
             Assert.AreEqual(myint, 12, "int is 12");
@@ -712,7 +712,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(BillStruct));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o is BillStruct, "retval is BillStruct");
             var bs = (BillStruct)o;
             Assert.IsTrue(bs.x == 123 && bs.s == "ABD~~DEF", "struct members");
@@ -745,7 +745,7 @@ namespace CookComputing.XmlRpc
             try
             {
                 var response = deserializer.DeserializeResponse(sr, null);
-                var o = response.retVal;
+                var o = response.RetVal;
                 Assert.Fail("should have thrown XmlRpcInvalidXmlRpcException");
             }
             catch (XmlRpcInvalidXmlRpcException)
@@ -769,7 +769,7 @@ namespace CookComputing.XmlRpc
             var sr = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(void));
-            Assert.IsTrue(response.retVal == null, "retval is null");
+            Assert.IsTrue(response.RetVal == null, "retval is null");
         }
 
         [Test]
@@ -788,7 +788,7 @@ namespace CookComputing.XmlRpc
             var sr = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(string));
-            var s = (string)response.retVal;
+            var s = (string)response.RetVal;
             Assert.IsTrue(s == string.Empty, "retval is empty string");
         }
 
@@ -799,7 +799,7 @@ namespace CookComputing.XmlRpc
             {
                 var deserializer = new XmlRpcResponseDeserializer();
                 var response = deserializer.DeserializeResponse(stm, typeof(string));
-                var ret = (string)response.retVal;
+                var ret = (string)response.RetVal;
                 Assert.IsTrue(ret == "hæ hvað segirðu þá", "retVal is 'hæ hvað segirðu þá'");
             }
         }
@@ -923,7 +923,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, null);
 
-            var o = response.retVal;
+            var o = response.RetVal;
         }
 
         [Test]
@@ -939,7 +939,7 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr, typeof(XmlRpcStruct));
 
-            var response_struct = (XmlRpcStruct)response.retVal;
+            var response_struct = (XmlRpcStruct)response.RetVal;
             var _response = (XmlRpcStruct)response_struct["response"];
             var results = (Array)_response["result"];
             Assert.AreEqual(results.Length, 1);
@@ -992,7 +992,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var sr2 = new StringReader(Xml);
             var response2 = deserializer.DeserializeResponse(sr2, typeof(DupMem));
-            var dupMem = (DupMem)response2.retVal;
+            var dupMem = (DupMem)response2.RetVal;
             Assert.AreEqual("this is a test", dupMem.foo);
         }
 
@@ -1039,7 +1039,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var sr2 = new StringReader(Xml);
             var response2 = deserializer.DeserializeResponse(sr2, typeof(XmlRpcStruct));
-            var dupMem = (XmlRpcStruct)response2.retVal;
+            var dupMem = (XmlRpcStruct)response2.RetVal;
             Assert.IsTrue((string)dupMem["foo"] == "this is a test");
         }
 
@@ -1093,7 +1093,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.AllowInvalidHTTPContent;
             var response = deserializer.DeserializeResponse(stm, typeof(int));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -1125,7 +1125,7 @@ namespace CookComputing.XmlRpc
             deserializer.NonStandard = XmlRpcNonStandard.AllowInvalidHTTPContent;
             var response = deserializer.DeserializeResponse(stm, typeof(int));
 
-            var o = response.retVal;
+            var o = response.RetVal;
             Assert.IsTrue(o != null, "retval not null");
             Assert.IsTrue(o is int, "retval is int");
             Assert.AreEqual((int)o, 12345, "retval is 12345");
@@ -1220,7 +1220,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(XmlRpcStruct));
-            var ret = (XmlRpcStruct)response.retVal;
+            var ret = (XmlRpcStruct)response.RetVal;
             Assert.AreEqual(ret.Count, 1);
         }
 
@@ -1250,7 +1250,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(XmlRpcStruct));
-            var ret = (XmlRpcStruct)response.retVal;
+            var ret = (XmlRpcStruct)response.RetVal;
         }
 
         [Test]
@@ -1279,7 +1279,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(XmlRpcStruct));
-            var ret = (XmlRpcStruct)response.retVal;
+            var ret = (XmlRpcStruct)response.RetVal;
         }
 
         public struct Donhrobjartz
@@ -1317,7 +1317,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(Donhrobjartz));
-            var ret = (Donhrobjartz)response.retVal;
+            var ret = (Donhrobjartz)response.RetVal;
             Assert.AreEqual("1w", ret.period);
         }
 
@@ -1347,7 +1347,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(Donhrobjartz));
-            var ret = (Donhrobjartz)response.retVal;
+            var ret = (Donhrobjartz)response.RetVal;
         }
 
         [Test]
@@ -1376,7 +1376,7 @@ This should be ignored.
             var deserializer = new XmlRpcResponseDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.IgnoreDuplicateMembers;
             var response = deserializer.DeserializeResponse(sr1, typeof(Donhrobjartz));
-            var ret = (Donhrobjartz)response.retVal;
+            var ret = (Donhrobjartz)response.RetVal;
         }
 
         public struct Category
@@ -1461,7 +1461,7 @@ This should be ignored.
             var sr1 = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr1, typeof(void));
-            Assert.IsNull(response.retVal);
+            Assert.IsNull(response.RetVal);
         }
 
         [XmlRpcMissingMapping(MappingAction.Ignore)]
@@ -1522,8 +1522,8 @@ This should be ignored.
             var sr1 = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr1, typeof(upcLookupValues));
-            Assert.IsTrue(response.retVal is upcLookupValues);
-            var ret = (upcLookupValues)response.retVal;
+            Assert.IsTrue(response.RetVal is upcLookupValues);
+            var ret = (upcLookupValues)response.RetVal;
             Assert.AreEqual("639382000393", ret.upc);
             Assert.AreEqual("0639382000393", ret.ean);
             Assert.AreEqual("us", ret.issuerCountryCode);
@@ -1613,8 +1613,8 @@ This should be ignored.
             var sr1 = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
             var response = deserializer.DeserializeResponse(sr1, typeof(upcsearchresults));
-            Assert.IsTrue(response.retVal is upcsearchresults);
-            var ret = (upcsearchresults)response.retVal;
+            Assert.IsTrue(response.RetVal is upcsearchresults);
+            var ret = (upcsearchresults)response.RetVal;
             Assert.AreEqual(5, ret.max_results);
             Assert.AreEqual("Search successful", ret.message);
         }

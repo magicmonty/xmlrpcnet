@@ -25,25 +25,23 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  [AttributeUsage(AttributeTargets.Class|AttributeTargets.Interface)]
-  public class XmlRpcUrlAttribute : Attribute
-  {
-    public XmlRpcUrlAttribute(string UriString)
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+    public class XmlRpcUrlAttribute : Attribute
     {
-      this.uri = UriString;
+        public XmlRpcUrlAttribute(string UriString)
+        {
+            _uri = UriString;
+        }
+
+        public string Uri { get { return _uri; } }
+        private readonly string _uri;
+
+        public override string ToString()
+        {
+            return "Uri : " + _uri;
+        }
+
     }
-    public string Uri 
-    {
-      get 
-      { return uri; }
-    }
-    public override string ToString()
-    {
-      string value = "Uri : " + uri;
-      return value;
-    }
-    private string uri;
-  }
 }

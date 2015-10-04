@@ -48,9 +48,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new object[] { 1, "one" } };
-            req.method = "FooNotParams";
-            req.mi = typeof(IFoo).GetMethod("FooNotParams");
+            req.Args = new object[] { new object[] { 1, "one" } };
+            req.Method = "FooNotParams";
+            req.Mi = typeof(IFoo).GetMethod("FooNotParams");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -83,9 +83,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new object[] { 1, "one" } };
-            req.method = "Foo";
-            req.mi = typeof(IFoo).GetMethod("Foo");
+            req.Args = new object[] { new object[] { 1, "one" } };
+            req.Method = "Foo";
+            req.Mi = typeof(IFoo).GetMethod("Foo");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -114,9 +114,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new[] { 1, 2, 3 } };
-            req.method = "BarNotParams";
-            req.mi = typeof(IFoo).GetMethod("BarNotParams");
+            req.Args = new object[] { new[] { 1, 2, 3 } };
+            req.Method = "BarNotParams";
+            req.Mi = typeof(IFoo).GetMethod("BarNotParams");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -152,9 +152,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new[] { 1, 2, 3 } };
-            req.method = "Bar";
-            req.mi = typeof(IFoo).GetMethod("Bar");
+            req.Args = new object[] { new[] { 1, 2, 3 } };
+            req.Method = "Bar";
+            req.Mi = typeof(IFoo).GetMethod("Bar");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -188,9 +188,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[0];
-            req.method = "FooZeroParameters";
-            req.mi = typeof(IFoo).GetMethod("FooZeroParameters");
+            req.Args = new object[0];
+            req.Method = "FooZeroParameters";
+            req.Mi = typeof(IFoo).GetMethod("FooZeroParameters");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -208,9 +208,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[0];
-            req.method = "FooZeroParameters";
-            req.mi = typeof(IFoo).GetMethod("FooZeroParameters");
+            req.Args = new object[0];
+            req.Method = "FooZeroParameters";
+            req.Mi = typeof(IFoo).GetMethod("FooZeroParameters");
             var ser = new XmlRpcRequestSerializer();
             ser.UseEmptyParamsTag = false;
             ser.SerializeRequest(stm, req);
@@ -251,9 +251,9 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Foo", "method is Foo");
-            Assert.AreEqual(request.args[0].GetType(), typeof(object[]), "argument is object[]");
-            Assert.AreEqual((object[])request.args[0], new object[] { 1, "one" }, "argument is params array 1, \"one\"");
+            Assert.AreEqual(request.Method, "Foo", "method is Foo");
+            Assert.AreEqual(request.Args[0].GetType(), typeof(object[]), "argument is object[]");
+            Assert.AreEqual((object[])request.Args[0], new object[] { 1, "one" }, "argument is params array 1, \"one\"");
         }
 
         [Test]
@@ -268,9 +268,9 @@ namespace CookComputing.XmlRpc
             var serializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
 
-            Assert.AreEqual(request.method, "Foo", "method is Foo");
-            Assert.AreEqual(request.args[0].GetType(), typeof(object[]), "argument is obj[]");
-            Assert.AreEqual((request.args[0] as object[]).Length, 0, "argument is empty array of object");
+            Assert.AreEqual(request.Method, "Foo", "method is Foo");
+            Assert.AreEqual(request.Args[0].GetType(), typeof(object[]), "argument is obj[]");
+            Assert.AreEqual((request.Args[0] as object[]).Length, 0, "argument is empty array of object");
         }
 
         [XmlRpcMethod]
@@ -290,8 +290,8 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var serializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "FooZeroParameters", "method is FooZeroParameters");
-            Assert.AreEqual(0, request.args.Length, "no arguments");
+            Assert.AreEqual(request.Method, "FooZeroParameters", "method is FooZeroParameters");
+            Assert.AreEqual(0, request.Args.Length, "no arguments");
         }
 
         [XmlRpcMethod]
@@ -327,11 +327,11 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var serializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Foo1", "method is Foo");
-            Assert.AreEqual((int)request.args[0], 5678, "first argument is int");
-            Assert.AreEqual(request.args[1].GetType(), typeof(object[]), "argument is object[]");
+            Assert.AreEqual(request.Method, "Foo1", "method is Foo");
+            Assert.AreEqual((int)request.Args[0], 5678, "first argument is int");
+            Assert.AreEqual(request.Args[1].GetType(), typeof(object[]), "argument is object[]");
             Assert.AreEqual(
-                (object[])request.args[1],
+                (object[])request.Args[1],
                 new object[] { 1, "one" },
                 "second argument is params array 1, \"one\"");
         }
@@ -364,10 +364,10 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Bar", "method is Foo");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string[]), "argument is string[]");
+            Assert.AreEqual(request.Method, "Bar", "method is Foo");
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string[]), "argument is string[]");
             Assert.AreEqual(
-                (string[])request.args[0],
+                (string[])request.Args[0],
                 new[] { "one", "two" },
                 "argument is params array \"one\", \"two\"");
         }
@@ -432,9 +432,9 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Linisgre", "method is Linisgre");
-            Assert.AreEqual(request.args[0].GetType(), typeof(object[]), "argument is object[]");
-            Assert.AreEqual((object[])request.args[0], new object[] { 1 }, "argument is params array 1");
+            Assert.AreEqual(request.Method, "Linisgre", "method is Linisgre");
+            Assert.AreEqual(request.Args[0].GetType(), typeof(object[]), "argument is object[]");
+            Assert.AreEqual((object[])request.Args[0], new object[] { 1 }, "argument is params array 1");
         }
 
         [Test]
@@ -449,9 +449,9 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(xml);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Linisgre", "method is Linisgre");
-            Assert.AreEqual(request.args[0].GetType(), typeof(object[]), "argument is object[]");
-            Assert.AreEqual((object[])request.args[0], new object[0], "argument is empty params array");
+            Assert.AreEqual(request.Method, "Linisgre", "method is Linisgre");
+            Assert.AreEqual(request.Args[0].GetType(), typeof(object[]), "argument is object[]");
+            Assert.AreEqual((object[])request.Args[0], new object[0], "argument is empty params array");
         }
 
         [Test]
@@ -492,9 +492,9 @@ namespace CookComputing.XmlRpc
             object[] param2 = new object[] { "test/METER", "P1", 1, 1, new[] { -1.0 } };
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "IFTASK", new object[] { param1, param2 } };
-            req.method = "Send_Param";
-            req.mi = this.GetType().GetMethod("Send_Param");
+            req.Args = new object[] { "IFTASK", new object[] { param1, param2 } };
+            req.Method = "Send_Param";
+            req.Mi = this.GetType().GetMethod("Send_Param");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -509,9 +509,9 @@ namespace CookComputing.XmlRpc
             StringReader sr = new StringReader(massimoRequest);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            Assert.AreEqual(request.method, "Send_Param", "method is Send_Param");
-            Assert.AreEqual(typeof(string), request.args[0].GetType(), "argument is string");
-            Assert.AreEqual(typeof(object[]), request.args[1].GetType(), "argument is object[]");
+            Assert.AreEqual(request.Method, "Send_Param", "method is Send_Param");
+            Assert.AreEqual(typeof(string), request.Args[0].GetType(), "argument is string");
+            Assert.AreEqual(typeof(object[]), request.Args[1].GetType(), "argument is object[]");
         }
 
         private string massimoRequest = @"<?xml version=""1.0""?>

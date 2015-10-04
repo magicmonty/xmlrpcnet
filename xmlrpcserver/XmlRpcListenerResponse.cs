@@ -23,63 +23,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#if !FX1_0
-
 namespace CookComputing.XmlRpc
 {
-  using System;
-  using System.IO;
-  using System.Net;
+    using System;
+    using System.IO;
+    using System.Net;
 
-  public class XmlRpcListenerResponse : CookComputing.XmlRpc.IHttpResponse
-  {
-    public XmlRpcListenerResponse(HttpListenerResponse response)
+    public class XmlRpcListenerResponse : IHttpResponse
     {
-      this.response = response;
-      response.SendChunked = false;
-    }
+        public XmlRpcListenerResponse(HttpListenerResponse response)
+        {
+            _response = response;
+            response.SendChunked = false;
+        }
 
-    Int64 IHttpResponse.ContentLength
-    {
-      set { response.ContentLength64 = value; }
-    }
+        Int64 IHttpResponse.ContentLength {
+            set { _response.ContentLength64 = value; }
+        }
 
-    string IHttpResponse.ContentType
-    {
-      get { return response.ContentType; }
-      set { response.ContentType = value; }
-    }
+        string IHttpResponse.ContentType {
+            get { return _response.ContentType; }
+            set { _response.ContentType = value; }
+        }
 
-    TextWriter IHttpResponse.Output
-    {
-      get { return new StreamWriter(response.OutputStream); }
-    }
+        TextWriter IHttpResponse.Output {
+            get { return new StreamWriter(_response.OutputStream); }
+        }
 
-    Stream IHttpResponse.OutputStream
-    {
-      get { return response.OutputStream; }
-    }
+        Stream IHttpResponse.OutputStream {
+            get { return _response.OutputStream; }
+        }
 
-    bool IHttpResponse.SendChunked
-    {
-      get { return response.SendChunked; }
-      set { response.SendChunked = value; }
-    }
+        bool IHttpResponse.SendChunked {
+            get { return _response.SendChunked; }
+            set { _response.SendChunked = value; }
+        }
 
-    int IHttpResponse.StatusCode
-    {
-      get { return response.StatusCode; }
-      set { response.StatusCode = value; }
-    }
+        int IHttpResponse.StatusCode {
+            get { return _response.StatusCode; }
+            set { _response.StatusCode = value; }
+        }
 
-    string IHttpResponse.StatusDescription
-    {
-      get { return response.StatusDescription; }
-      set { response.StatusDescription = value; }
-    }
+        string IHttpResponse.StatusDescription {
+            get { return _response.StatusDescription; }
+            set { _response.StatusDescription = value; }
+        }
 
-    private HttpListenerResponse response;
-  }
+        private readonly HttpListenerResponse _response;
+    }
 }
-
-#endif

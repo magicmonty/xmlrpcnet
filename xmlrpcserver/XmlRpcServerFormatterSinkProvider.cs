@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-using System.Collections;
 using System.Runtime.Remoting.Channels;
 using System.Security;
 
@@ -31,52 +30,25 @@ namespace CookComputing.XmlRpc
 {
     public class XmlRpcServerFormatterSinkProvider : IServerFormatterSinkProvider
     {
-        // constructors
-        public XmlRpcServerFormatterSinkProvider(
-          IDictionary properties,
-          ICollection providerData)
-        {
-            // can use properties to pass in custom attributes from the config
-            // file which can then be passed to sink constructor as required
-        }
-
-        public XmlRpcServerFormatterSinkProvider()
-        {
-            // can use properties to pass in custom attributes from the config
-            // file which can then be passed to sink constructor as required
-        }
-
-        // properties
-        //
-        public IServerChannelSinkProvider Next
-        {
+        public IServerChannelSinkProvider Next {
             [SecurityCritical]
-            get { return _next; }
+            get;
             [SecurityCritical]
-            set { _next = value; }
+            set;
         }
-
-        // public methods
-        //
+            
         [SecurityCritical]
         public IServerChannelSink CreateSink(IChannelReceiver channel)
         {
             IServerChannelSink scs = null;
-            if (_next != null)
-            {
-                scs = _next.CreateSink(channel);
-            }
+            if (Next != null)
+                scs = Next.CreateSink(channel);
             return new XmlRpcServerFormatterSink(scs);
         }
 
         [SecurityCritical]
         public void GetChannelData(IChannelDataStore channelData)
         {
-            // TODO: not required???
         }
-
-        // data
-        //
-        private IServerChannelSinkProvider _next;
     }
 }

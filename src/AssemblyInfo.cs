@@ -34,7 +34,5 @@ using System.Security;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-#if (!COMPACT_FRAMEWORK)
 [assembly: AllowPartiallyTrustedCallers]
-#endif
 [assembly: System.CLSCompliant(true)]

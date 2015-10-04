@@ -33,12 +33,11 @@ namespace CookComputing.XmlRpc
     [Serializable]
     public class XmlRpcStruct : IDictionary, ISerializable, IDeserializationCallback, ICloneable
     {
-        private readonly List<string> _keys = new List<string>();
-        private readonly List<object> _values = new List<object>();
         private readonly Dictionary<string, object> _base = new Dictionary<string, object>();
-        private readonly object _syncRoot = new object();
 
-        public XmlRpcStruct() { }
+        public XmlRpcStruct()
+        {
+        }
 
         protected XmlRpcStruct(SerializationInfo info, StreamingContext context)
         {
@@ -88,6 +87,7 @@ namespace CookComputing.XmlRpc
         public bool IsReadOnly { get { return false; } }
 
         public ICollection Keys { get { return _keys; } }
+        private readonly List<string> _keys = new List<string>();
 
         public void Remove(object key)
         {
@@ -105,9 +105,9 @@ namespace CookComputing.XmlRpc
         }
 
         public ICollection Values { get { return _values; } }
+        private readonly List<object> _values = new List<object>();
 
-        public object this[object key]
-        {
+        public object this[object key] {
             get
             {
                 var theKey = key as string;
@@ -136,6 +136,7 @@ namespace CookComputing.XmlRpc
         public bool IsSynchronized { get { return false; } }
 
         public object SyncRoot { get { return _syncRoot; } }
+        private readonly object _syncRoot = new object();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -186,8 +187,7 @@ namespace CookComputing.XmlRpc
                 _index = -1;
             }
 
-            public object Current
-            {
+            public object Current {
                 get
                 {
                     CheckIndex();
@@ -201,8 +201,7 @@ namespace CookComputing.XmlRpc
                 return _index < _keys.Count;
             }
 
-            public DictionaryEntry Entry
-            {
+            public DictionaryEntry Entry {
                 get
                 {
                     CheckIndex();
@@ -210,8 +209,7 @@ namespace CookComputing.XmlRpc
                 }
             }
 
-            public object Key
-            {
+            public object Key {
                 get
                 {
                     CheckIndex();
@@ -219,8 +217,7 @@ namespace CookComputing.XmlRpc
                 }
             }
 
-            public object Value
-            {
+            public object Value {
                 get
                 {
                     CheckIndex();
@@ -232,7 +229,7 @@ namespace CookComputing.XmlRpc
             {
                 if (_index < 0 || _index >= _keys.Count)
                     throw new InvalidOperationException(
-                      "Enumeration has either not started or has already finished.");
+                        "Enumeration has either not started or has already finished.");
             }
         }
 

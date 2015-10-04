@@ -23,8 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#if (!SILVERLIGHT)
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -32,26 +30,24 @@ using CookComputing.XmlRpc;
 
 namespace CookComputing.XmlRpc
 {
-  public class Tracer : XmlRpcLogger
-  {
-    protected override void OnRequest(object sender, XmlRpcRequestEventArgs e)
+    public class Tracer : XmlRpcLogger
     {
-      DumpStream(e.RequestStream);
-    }
+        protected override void OnRequest (object sender, XmlRpcRequestEventArgs e)
+        {
+            DumpStream (e.RequestStream);
+        }
 
-    protected override void OnResponse(object sender, XmlRpcResponseEventArgs e)
-    {
-      DumpStream(e.ResponseStream);
-    }
+        protected override void OnResponse (object sender, XmlRpcResponseEventArgs e)
+        {
+            DumpStream (e.ResponseStream);
+        }
 
-    private void DumpStream(Stream stm)
-    {
-      TextReader trdr = new StreamReader(stm);
-      String s = trdr.ReadToEnd();
-      Trace.WriteLine(s);
-      stm.Position = 0;
+        private static void DumpStream (Stream stm)
+        {
+            var trdr = new StreamReader (stm);
+            var s = trdr.ReadToEnd ();
+            Trace.WriteLine (s);
+            stm.Position = 0;
+        }
     }
-  }
 }
-
-#endif

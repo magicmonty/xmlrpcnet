@@ -189,8 +189,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new byte[0] };
-            req.method = "Foo";
+            req.Args = new object[] { new byte[0] };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -309,8 +309,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new Struct2 { member1 = 1, member4 = 4 } };
-            req.method = "Foo";
+            req.Args = new object[] { new Struct2 { member1 = 1, member4 = 4 } };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -403,8 +403,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new Struct3() };
-            req.method = "Foo";
+            req.Args = new object[] { new Struct3() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -464,8 +464,8 @@ namespace CookComputing.XmlRpc
             TestClass arg = new TestClass();
             arg._int = 456;
             arg._string = "Test Class";
-            req.args = new object[] { arg };
-            req.method = "Foo";
+            req.Args = new object[] { arg };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -520,8 +520,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new Struct4() };
-            req.method = "Foo";
+            req.Args = new object[] { new Struct4() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -563,8 +563,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new Struct5 { ds = new System.Data.DataSet(), y = 1234 } };
-            req.method = "Foo";
+            req.Args = new object[] { new Struct5 { ds = new System.Data.DataSet(), y = 1234 } };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -595,8 +595,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new Class4() };
-            req.method = "Foo";
+            req.Args = new object[] { new Class4() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -648,8 +648,8 @@ namespace CookComputing.XmlRpc
                                                   new RecursiveMember { Level = "3", }
                                           }
                               };
-            req.args = new object[] { example };
-            req.method = "Foo";
+            req.Args = new object[] { example };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = false;
             ser.SerializeRequest(stm, req);
@@ -784,8 +784,8 @@ namespace CookComputing.XmlRpc
                                                   }
                                           }
                               };
-            req.args = new object[] { example };
-            req.method = "Foo";
+            req.Args = new object[] { example };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = false;
             ser.SerializeRequest(stm, req);
@@ -930,8 +930,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new DefaultNullMappingStruct() };
-            req.method = "Foo";
+            req.Args = new object[] { new DefaultNullMappingStruct() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -964,8 +964,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new NullMappingIgnoreStruct() };
-            req.method = "Foo";
+            req.Args = new object[] { new NullMappingIgnoreStruct() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -997,8 +997,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new NullMappingNilStruct() };
-            req.method = "Foo";
+            req.Args = new object[] { new NullMappingNilStruct() };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -1184,8 +1184,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { null };
-            req.method = "Foo";
+            req.Args = new object[] { null };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -1211,8 +1211,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234567 };
-            req.method = "Foo";
+            req.Args = new object[] { 1234567 };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -1237,8 +1237,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234567 };
-            req.method = "Foo";
+            req.Args = new object[] { 1234567 };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
@@ -1264,8 +1264,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234567 };
-            req.method = "Foo";
+            req.Args = new object[] { 1234567 };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseIndentation = false;
             ser.SerializeRequest(stm, req);
@@ -1299,8 +1299,8 @@ namespace CookComputing.XmlRpc
 
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { str1 };
-            req.method = "Foo";
+            req.Args = new object[] { str1 };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;
@@ -1319,8 +1319,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "string no string tag" };
-            req.method = "Foo";
+            req.Args = new object[] { "string no string tag" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = false;
             ser.Indentation = 4;
@@ -1345,8 +1345,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "string string tag" };
-            req.method = "Foo";
+            req.Args = new object[] { "string string tag" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1373,8 +1373,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "string default tag" };
-            req.method = "Foo";
+            req.Args = new object[] { "string default tag" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.SerializeRequest(stm, req);
@@ -1400,8 +1400,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234 };
-            req.method = "Foo";
+            req.Args = new object[] { 1234 };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 4;
             ser.UseIntTag = true;
@@ -1435,9 +1435,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234, "test", 10.1 };
-            req.method = "Foo";
-            req.mi = this.GetType().GetMethod("Foo");
+            req.Args = new object[] { 1234, "test", 10.1 };
+            req.Method = "Foo";
+            req.Mi = this.GetType().GetMethod("Foo");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1490,9 +1490,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234, "test", new[] { 10.1 } };
-            req.method = "FooWithParams";
-            req.mi = this.GetType().GetMethod("FooWithParams");
+            req.Args = new object[] { 1234, "test", new[] { 10.1 } };
+            req.Method = "FooWithParams";
+            req.Mi = this.GetType().GetMethod("FooWithParams");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1505,9 +1505,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { 1234, "test", 10.1, "lopol" };
-            req.method = "Foo";
-            req.mi = this.GetType().GetMethod("Foo");
+            req.Args = new object[] { 1234, "test", 10.1, "lopol" };
+            req.Method = "Foo";
+            req.Mi = this.GetType().GetMethod("Foo");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1525,9 +1525,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "Bob Dylan", "abcd1234" };
-            req.method = "artist.getInfo";
-            req.mi = this.GetType().GetMethod("getInfo");
+            req.Args = new object[] { "Bob Dylan", "abcd1234" };
+            req.Method = "artist.getInfo";
+            req.Mi = this.GetType().GetMethod("getInfo");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1573,9 +1573,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[0];
-            req.method = "system.pid";
-            req.mi = this.GetType().GetMethod("getPid");
+            req.Args = new object[0];
+            req.Method = "system.pid";
+            req.Mi = this.GetType().GetMethod("getPid");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1596,9 +1596,9 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[0];
-            req.method = "system.pid";
-            req.mi = this.GetType().GetMethod("getPid");
+            req.Args = new object[0];
+            req.Method = "system.pid";
+            req.Mi = this.GetType().GetMethod("getPid");
             var ser = new XmlRpcRequestSerializer();
             ser.Indentation = 2;
             ser.UseIntTag = true;
@@ -1618,8 +1618,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { string.Empty };
-            req.method = "Foo";
+            req.Args = new object[] { string.Empty };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1647,8 +1647,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { string.Empty };
-            req.method = "Foo";
+            req.Args = new object[] { string.Empty };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1676,8 +1676,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { string.Empty };
-            req.method = "Foo";
+            req.Args = new object[] { string.Empty };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.UseIndentation = false;
@@ -1698,8 +1698,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { string.Empty };
-            req.method = "Foo";
+            req.Args = new object[] { string.Empty };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = false;
             ser.Indentation = 4;
@@ -1724,8 +1724,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "\r\n" };
-            req.method = "Foo";
+            req.Args = new object[] { "\r\n" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = false;
             ser.Indentation = 4;
@@ -1750,8 +1750,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "\r\n" };
-            req.method = "Foo";
+            req.Args = new object[] { "\r\n" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1778,8 +1778,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "\r" };
-            req.method = "Foo";
+            req.Args = new object[] { "\r" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1806,8 +1806,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { "\n" };
-            req.method = "Foo";
+            req.Args = new object[] { "\n" };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 4;
@@ -1843,8 +1843,8 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new object[] { new TestPropertyMemberName { Title1 = "abc", Title2 = "def" } };
-            req.method = "Foo";
+            req.Args = new object[] { new TestPropertyMemberName { Title1 = "abc", Title2 = "def" } };
+            req.Method = "Foo";
             var ser = new XmlRpcRequestSerializer();
             ser.UseStringTag = true;
             ser.Indentation = 2;

@@ -40,80 +40,88 @@ namespace CookComputing.XmlRpc
             _next = next;
         }
 
-        public IServerChannelSink NextChannelSink
-        {
+        public IServerChannelSink NextChannelSink {
             [SecurityCritical]
             get { return _next; }
         }
 
-        public IDictionary Properties
-        {
+        public IDictionary Properties {
             [SecurityCritical]
             get { return null; }
         }
 
         [SecurityCritical]
         public void AsyncProcessResponse(
-          IServerResponseChannelSinkStack sinkStack,
-          object state,
-          IMessage msg,
-          ITransportHeaders headers,
-          Stream stream)
+            IServerResponseChannelSinkStack sinkStack,
+            object state,
+            IMessage msg,
+            ITransportHeaders headers,
+            Stream stream)
         {
             throw new NotSupportedException();
         }
 
         [SecurityCritical]
         public Stream GetResponseStream(
-          IServerResponseChannelSinkStack sinkStack,
-          object state,
-          IMessage msg,
-          ITransportHeaders headers)
+            IServerResponseChannelSinkStack sinkStack,
+            object state,
+            IMessage msg,
+            ITransportHeaders headers)
         {
             throw new NotSupportedException();
         }
 
         [SecurityCritical]
         public ServerProcessing ProcessMessage(
-          IServerChannelSinkStack sinkStack,
-          IMessage requestMsg,
-          ITransportHeaders requestHeaders,
-          Stream requestStream,
-          out IMessage responseMsg,
-          out ITransportHeaders responseHeaders,
-          out Stream responseStream
-          )
+            IServerChannelSinkStack sinkStack,
+            IMessage requestMsg,
+            ITransportHeaders requestHeaders,
+            Stream requestStream,
+            out IMessage responseMsg,
+            out ITransportHeaders responseHeaders,
+            out Stream responseStream)
         {
             // use presence of SOAPAction header to determine if this is a SOAP
             // request - if so pass onto next sink in chain
             string soapAction = (string)requestHeaders["SOAPAction"];
             if (soapAction != null)
             {
-                return _next.ProcessMessage(sinkStack, requestMsg, requestHeaders,
-                  requestStream, out responseMsg, out responseHeaders,
-                  out responseStream);
+                return _next.ProcessMessage(
+                    sinkStack, 
+                    requestMsg, 
+                    requestHeaders,
+                    requestStream, 
+                    out responseMsg, 
+                    out responseHeaders,
+                    out responseStream);
             }
 
             // for time being assume we have an XML-RPC request (need to improve
             // this in case there are other non-SOAP formatters in the chain)
             try
             {
-                MethodCall mthdCall = DeserializeRequest(requestHeaders, requestStream);
+                var mthdCall = DeserializeRequest(requestHeaders, requestStream);
                 sinkStack.Push(this, mthdCall);
                 // forward to next sink in chain - pass request stream as null to 
                 // indicate that we have deserialized the request
-                _next.ProcessMessage(sinkStack, mthdCall, requestHeaders, null,
-                  out responseMsg, out responseHeaders, out responseStream);
+                _next.ProcessMessage(
+                    sinkStack, 
+                    mthdCall, 
+                    requestHeaders, 
+                    null,
+                    out responseMsg, 
+                    out responseHeaders, 
+                    out responseStream);
+                
                 SerializeResponse(responseMsg, ref responseHeaders, ref responseStream);
             }
             catch (Exception ex)
             {
                 responseMsg = new ReturnMessage(ex, (IMethodCallMessage)requestMsg);
                 responseStream = new MemoryStream();
-                XmlRpcFaultException fex = new XmlRpcFaultException(0, ex.Message);
-                XmlRpcSerializer serializer = new XmlRpcSerializer();
-                serializer.SerializeFaultResponse(responseStream,
-                  (XmlRpcFaultException)fex);
+                var fex = new XmlRpcFaultException(0, ex.Message);
+                var serializer = new XmlRpcSerializer();
+                serializer.SerializeFaultResponse(responseStream, fex);
                 responseHeaders = new TransportHeaders();
             }
             return ServerProcessing.Complete;
@@ -122,75 +130,73 @@ namespace CookComputing.XmlRpc
         // private methods
         //
         [SecurityCritical]
-        MethodCall DeserializeRequest(
-          ITransportHeaders requestHeaders,
-          Stream requestStream)
+        private MethodCall DeserializeRequest(
+            ITransportHeaders requestHeaders,
+            Stream requestStream)
         {
-            string requestUri = (string)requestHeaders["__RequestUri"];
-            Type svcType = GetServiceType(requestUri);
+            var requestUri = (string)requestHeaders["__RequestUri"];
+            var svcType = GetServiceType(requestUri);
             var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest xmlRpcReq
-              = deserializer.DeserializeRequest(requestStream, svcType);
-            Header[] headers = GetChannelHeaders(requestHeaders, xmlRpcReq, svcType);
-            MethodCall mthdCall = new MethodCall(headers);
+            var xmlRpcReq = deserializer.DeserializeRequest(requestStream, svcType);
+            var headers = GetChannelHeaders(requestHeaders, xmlRpcReq, svcType);
+            var mthdCall = new MethodCall(headers);
             mthdCall.ResolveMethod();
             return mthdCall;
         }
 
         [SecurityCritical]
-        void SerializeResponse(
-          IMessage responseMsg,
-          ref ITransportHeaders responseHeaders,
-          ref Stream responseStream)
+        private void SerializeResponse(
+            IMessage responseMsg,
+            ref ITransportHeaders responseHeaders,
+            ref Stream responseStream)
         {
-            XmlRpcResponseSerializer serializer = new XmlRpcResponseSerializer();
+            var serializer = new XmlRpcResponseSerializer();
             responseStream = new MemoryStream();
             responseHeaders = new TransportHeaders();
 
-            ReturnMessage retMsg = (ReturnMessage)responseMsg;
+            var retMsg = (ReturnMessage)responseMsg;
             if (retMsg.Exception == null)
             {
-                XmlRpcResponse xmlRpcResp = new XmlRpcResponse(retMsg.ReturnValue);
+                var xmlRpcResp = new XmlRpcResponse(retMsg.ReturnValue);
                 serializer.SerializeResponse(responseStream, xmlRpcResp);
             }
             else if (retMsg.Exception is XmlRpcFaultException)
             {
-                serializer.SerializeFaultResponse(responseStream,
-                  (XmlRpcFaultException)retMsg.Exception);
+                serializer.SerializeFaultResponse(responseStream, (XmlRpcFaultException)retMsg.Exception);
             }
             else
             {
-                serializer.SerializeFaultResponse(responseStream,
-                  new XmlRpcFaultException(1, retMsg.Exception.Message));
+                serializer.SerializeFaultResponse(responseStream, new XmlRpcFaultException(1, retMsg.Exception.Message));
             }
+
             responseHeaders["Content-Type"] = "text/xml; charset=\"utf-8\"";
         }
 
         [SecurityCritical]
-        Header[] GetChannelHeaders(
-          ITransportHeaders requestHeaders,
-          XmlRpcRequest xmlRpcReq,
-          Type svcType)
+        private Header[] GetChannelHeaders(
+            ITransportHeaders requestHeaders,
+            XmlRpcRequest xmlRpcReq,
+            Type svcType)
         {
-            string requestUri = (string)requestHeaders["__RequestUri"];
-            XmlRpcServiceInfo svcInfo = XmlRpcServiceInfo.CreateServiceInfo(svcType);
-            ArrayList hdrList = new ArrayList();
+            var requestUri = (string)requestHeaders["__RequestUri"];
+            var svcInfo = XmlRpcServiceInfo.CreateServiceInfo(svcType);
+            var hdrList = new ArrayList();
             hdrList.Add(new Header("__Uri", requestUri));
             hdrList.Add(new Header("__TypeName", svcType.AssemblyQualifiedName));
-            hdrList.Add(new Header("__MethodName",
-              svcInfo.GetMethodName(xmlRpcReq.method)));
-            hdrList.Add(new Header("__Args", xmlRpcReq.args));
+            hdrList.Add(new Header("__MethodName", svcInfo.GetMethodName(xmlRpcReq.Method)));
+            hdrList.Add(new Header("__Args", xmlRpcReq.Args));
+
             return (Header[])hdrList.ToArray(typeof(Header));
         }
 
         [SecurityCritical]
         public static Type GetServiceType(String Uri)
         {
-            Type type = RemotingServices.GetServerTypeForUri(Uri);
+            var type = RemotingServices.GetServerTypeForUri(Uri);
             if (type != null)
                 return type;
-            throw new Exception(string.Format("No service type registered "
-              + "for uri {0}", Uri));
+            
+            throw new Exception(string.Format("No service type registered for uri {0}", Uri));
         }
 
         IServerChannelSink _next;

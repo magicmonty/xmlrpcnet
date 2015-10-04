@@ -25,40 +25,28 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  public enum NullMappingAction
-  {
-    Error,
-    Ignore,
-    Nil
-  }
-
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Struct
-     | AttributeTargets.Property | AttributeTargets.Class)]
-  public class XmlRpcNullMappingAttribute : Attribute
-  {
-    public XmlRpcNullMappingAttribute()
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Struct
+    | AttributeTargets.Property | AttributeTargets.Class)]
+    public class XmlRpcNullMappingAttribute : Attribute
     {
-    }
+        public XmlRpcNullMappingAttribute() : this(NullMappingAction.Error)
+        {
+        }
 
-    public XmlRpcNullMappingAttribute(NullMappingAction action)
-    {
-      _action = action;
-    }
+        public XmlRpcNullMappingAttribute(NullMappingAction action)
+        {
+            _action = action;
+        }
 
-    public NullMappingAction Action
-    {
-      get
-      { return _action; }
-    }
+        public NullMappingAction Action { get { return _action; } }
 
-    public override string ToString()
-    {
-      string value = _action.ToString();
-      return value;
-    }
+        private readonly NullMappingAction _action;
 
-    private NullMappingAction _action = NullMappingAction.Error;
-  }
+        public override string ToString()
+        {
+            return _action.ToString();
+        }
+    }
 }

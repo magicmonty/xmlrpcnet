@@ -25,24 +25,22 @@ DEALINGS IN THE SOFTWARE.
 
 namespace CookComputing.XmlRpc
 {
-  using System;
+    using System;
 
-  [AttributeUsage(AttributeTargets.ReturnValue)]
-  public class XmlRpcReturnValueAttribute : Attribute
-  {
-    public XmlRpcReturnValueAttribute()
+    [AttributeUsage(AttributeTargets.ReturnValue)]
+    public class XmlRpcReturnValueAttribute : Attribute
     {
+        public XmlRpcReturnValueAttribute()
+        {
+            Description = string.Empty;
+        }
+
+        public string Description { get; set; }
+
+        public override string ToString()
+        {
+            return "Description : " + Description;
+        }
+
     }
-    public string Description 
-    {
-      get { return description; }
-      set { description = value; }
-    }
-    public override string ToString()
-    {
-      string value = "Description : " + description;
-      return value;
-    }
-    private string description = "";
-  }
 }

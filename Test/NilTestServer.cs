@@ -1,13 +1,7 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NilTestServer.cs" company="">
-//   
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-
-
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
+using Shouldly;
+using System;
 
 namespace CookComputing.XmlRpc
 {
@@ -17,7 +11,8 @@ namespace CookComputing.XmlRpc
         [Test]
         public void DeserializeResponseNilMethod()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodResponse>
   <params>
     <param>
@@ -25,17 +20,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
-            XmlRpcResponse response = deserializer.DeserializeResponse(sr, this.GetType());
+            var response = deserializer.DeserializeResponse(sr, GetType());
 
-            Assert.IsNull(response.retVal, "return value is null");
+            response.RetVal.ShouldBeNull();
         }
 
         [Test]
         public void DeserializeResponseStructWithNil()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodResponse>
   <params>
     <param>
@@ -54,19 +51,21 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodResponse>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcResponseDeserializer();
-            XmlRpcResponse response = deserializer.DeserializeResponse(sr, typeof(ServerBounds));
-            Assert.IsInstanceOf<ServerBounds>(response.retVal);
-            ServerBounds bounds = response.retVal as ServerBounds;
-            Assert.IsNull(bounds.lowerBound);
-            Assert.IsNull(bounds.upperBound);
+            var response = deserializer.DeserializeResponse(sr, typeof(ServerBounds));
+            response.RetVal.ShouldBeOfType<ServerBounds>();
+            var bounds = response.RetVal as ServerBounds;
+            bounds.lowerBound.ShouldBeNull();
+            bounds.upperBound.ShouldBeNull();
         }
 
         [Test]
         public void DeserializeRequestStructWithNil()
         {
-            string xml = @"<?xml version=""1.0""?>
+            const string Xml = 
+@"<?xml version=""1.0""?>
 <methodCall>
     <methodName>StructWithArrayMethod</methodName>
     <params>
@@ -96,23 +95,23 @@ namespace CookComputing.XmlRpc
         </param>
     </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
+            var request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.method, "StructWithArrayMethod", "method is TestString");
-            Assert.AreEqual(1, request.args.Length);
-            Assert.IsInstanceOf<StructWithArray>(request.args[0], "argument is StructWithArray");
-            int?[] arg = ((StructWithArray)request.args[0]).ints;
-            Assert.AreEqual(1, arg[0]);
-            Assert.IsNull(arg[1]);
-            Assert.AreEqual(3, arg[2]);
+            request.Method.ShouldBe("StructWithArrayMethod");
+            request.Args.Length.ShouldBe(1);
+            request.Args[0].ShouldBeOfType<StructWithArray>();
+            ((StructWithArray)request.Args[0]).ints
+                .ShouldBe(new int?[] { 1, null, 3});
         }
 
         [Test]
         public void DeserializeRequestNilMethod()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>NilMethod</methodName> 
   <params>
@@ -124,13 +123,14 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
+            var request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.method, "NilMethod", "method is TestString");
-            Assert.IsNull(request.args[0], "argument is null");
-            Assert.AreEqual(12345, (int)request.args[1], "argument is 12345");
+            request.Method.ShouldBe("NilMethod");
+            request.Args[0].ShouldBeNull();
+            request.Args[1].ShouldBe(12345);
         }
 
         [XmlRpcNullMapping(NullMappingAction.Nil)]
@@ -152,7 +152,7 @@ namespace CookComputing.XmlRpc
     }
 
     [XmlRpcNullMapping(NullMappingAction.Nil)]
-    internal class ServerBounds
+    class ServerBounds
     {
         public int? lowerBound;
 

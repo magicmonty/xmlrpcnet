@@ -28,32 +28,22 @@ using System.IO;
 
 namespace CookComputing.XmlRpc
 {
-  public class XmlRpcRequestEventArgs : EventArgs
-  {
-    private Guid _guid;
-    private long _request;
-    private Stream _requestStream;
-
-    public XmlRpcRequestEventArgs(Guid guid, long request, Stream requestStream)
+    public class XmlRpcRequestEventArgs : EventArgs
     {
-      _guid = guid;
-      _request = request;
-      _requestStream = requestStream;
-    }
+        public XmlRpcRequestEventArgs(Guid guid, long request, Stream requestStream)
+        {
+            _guid = guid;
+            _request = request;
+            _requestStream = requestStream;
+        }
 
-    public Guid ProxyID
-    {
-      get { return _guid; }
-    }
+        public Guid ProxyID { get { return _guid; } }
+        private readonly Guid _guid;
 
-    public long RequestNum
-    {
-      get { return _request; }
-    }
+        public long RequestNum { get { return _request; } }
+        private readonly long _request;
 
-    public Stream RequestStream
-    {
-      get { return _requestStream; }
+        public Stream RequestStream { get { return _requestStream; } }
+        private readonly Stream _requestStream;
     }
-  }
 }

@@ -3,16 +3,25 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
+using Shouldly;
 
 namespace CookComputing.XmlRpc
 {
     [TestFixture]
     public class DeserializeRequestTests
     {
+        private static XmlRpcRequest DeserializeRequest(string xml)
+        {
+            var sr = new StringReader(xml);
+            var deserializer = new XmlRpcRequestDeserializer();
+            return deserializer.DeserializeRequest(sr, null);
+        }
+
         [Test]
         public void StringElement()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestString</methodName> 
   <params>
@@ -21,21 +30,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.method, "TestString", "method is TestString");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
-              "argument is string");
-            Assert.AreEqual((string)request.args[0], "test string",
-              "argument is 'test string'");
+            request.Method.ShouldBe("TestString", "method is TestString");
+            request.Args[0].ShouldBeOfType<string>("argument is string");
+            ((string)request.Args[0]).ShouldBe("test string", "argument is 'test string'");
         }
 
         [Test]
         public void StringNoStringElement()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestString</methodName> 
   <params>
@@ -44,21 +51,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.method, "TestString", "method is TestString");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
-              "argument is string");
-            Assert.AreEqual((string)request.args[0], "test string",
-              "argument is 'test string'");
+            request.Method.ShouldBe("TestString", "method is TestString");
+            request.Args[0].ShouldBeOfType<string>("argument is string");
+            ((string)request.Args[0]).ShouldBe("test string", "argument is 'test string'");
         }
 
         [Test]
         public void StringEmptyValue1()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestString</methodName> 
   <params>
@@ -67,20 +72,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.method, "TestString", "method is TestString");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
-              "argument is string");
-            Assert.AreEqual((string)request.args[0], "", "argument is empty string");
+            request.Method.ShouldBe("TestString", "method is TestString");
+            request.Args[0].ShouldBeOfType<string>("argument is string");
+            ((string)request.Args[0]).ShouldBeEmpty("argument is empty string");
         }
 
         [Test]
         public void StringEmptyValue2()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestString</methodName> 
   <params>
@@ -89,77 +93,57 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.method, "TestString", "method is TestString");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
-              "argument is string");
-            Assert.AreEqual((string)request.args[0], "", "argument is empty string");
+            request.Method.ShouldBe("TestString", "method is TestString");
+            request.Args[0].ShouldBeOfType<string>("argument is string");
+            ((string)request.Args[0]).ShouldBeEmpty("argument is empty string");
         }
 
         [Test]
         public void FlatXml()
         {
-            string xml = @"<?xml version=""1.0"" ?><methodCall><methodName>TestString</methodName><params><param><value>test string</value></param></params></methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            const string Xml = @"<?xml version=""1.0"" ?><methodCall><methodName>TestString</methodName><params><param><value>test string</value></param></params></methodCall>";
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.method, "TestString", "method is TestString");
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
-              "argument is string");
-            Assert.AreEqual((string)request.args[0], "test string",
-              "argument is 'test string'");
+            request.Method.ShouldBe("TestString", "method is TestString");
+            request.Args[0].ShouldBeOfType<string>("argument is string");
+            ((string)request.Args[0]).ShouldBe("test string", "argument is 'test string'");
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullRequestStream()
         {
-            var deserializer = new XmlRpcRequestDeserializer();
-            Stream stm = null;
-            XmlRpcRequest request = deserializer.DeserializeRequest(stm, null);
+            Should.Throw<ArgumentNullException>(() =>
+                new XmlRpcRequestDeserializer().DeserializeRequest((Stream)null, null));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcIllFormedXmlException))]
         public void EmptyRequestStream()
         {
-            StringReader sr = new StringReader("");
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            Should.Throw<XmlRpcIllFormedXmlException>(() => DeserializeRequest(string.Empty));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcIllFormedXmlException))]
         public void InvalidXml()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
-<methodCall> </duffMmethodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            Should.Throw<XmlRpcIllFormedXmlException>(() => DeserializeRequest(@"<?xml version=""1.0"" ?><methodCall> </duffMmethodCall>"));
         }
 
         // test handling of methodCall element
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void MissingMethodCall()
         {
-            string xml = @"<?xml version=""1.0"" ?> <elem/>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(@"<?xml version=""1.0"" ?> <elem/>"));
         }
 
         // test handling of methodName element
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void MissingMethodName()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <params>
   <param>
@@ -167,16 +151,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void EmptyMethodName()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName/> 
 <params>
@@ -185,16 +168,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void ZeroLengthMethodName()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName></methodName> 
 <params>
@@ -203,82 +185,84 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         // test handling of params element
         [Test]
         public void MissingParams()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestString</methodName> 
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.NotThrow(() => DeserializeRequest(Xml));
         }
-
 
         [XmlRpcMethod]
         public string MethodNoArgs()
         {
-            return "";
+            return string.Empty;
         }
 
         // test handling of params element
         [Test]
         public void NoParam1()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>MethodNoArgs</methodName> 
 <params/>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, this.GetType());
+            Should.NotThrow(() =>  serializer.DeserializeRequest(sr, GetType()));
         }
 
         // test handling of param element
         [Test]
         public void NoParam2()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>MethodNoArgs</methodName> 
   <params>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, this.GetType());
-            //Console.WriteLine("");
+            Should.NotThrow(() =>  deserializer.DeserializeRequest(sr, GetType()));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void EmptyParam1()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestString</methodName> 
 <params>
   <param/>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            
+            var sr = new StringReader(Xml);
             var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
+            Should.NotThrow(() =>  serializer.DeserializeRequest(sr, null));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void EmptyParam2()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestString</methodName> 
 <params>
@@ -286,16 +270,16 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         // test handling integer values
         [Test]
         public void Integer()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -306,20 +290,18 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
 
-            Assert.IsTrue(request.method == "TestInt", "method is TestInt");
-            Assert.AreEqual(request.args[0].GetType(), typeof(int),
-              "argument is int");
-            Assert.AreEqual((int)request.args[0], 666, "argument is 666");
+            var request = DeserializeRequest(Xml);
+
+            request.Method.ShouldBe("TestInt");
+            request.Args[0].ShouldBeOfType<int>();
+            ((int)request.Args[0]).ShouldBe(666);
         }
 
         [Test]
         public void I4Integer()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = @"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -328,20 +310,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
 
-            Assert.IsTrue(request.method == "TestInt", "method is TestInt");
-            Assert.AreEqual(request.args[0].GetType(), typeof(int),
-              "argument is int");
-            Assert.AreEqual((int)request.args[0], 666, "argument is 666");
+            var request = DeserializeRequest(Xml);
+
+            request.Method.ShouldBe("TestInt");
+            request.Args[0].ShouldBeOfType<int>();
+            ((int)request.Args[0]).ShouldBe(666);
         }
 
         [Test]
         public void IntegerWithPlus()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -350,20 +331,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.IsTrue(request.method == "TestInt", "method is TestInt");
-            Assert.AreEqual(request.args[0].GetType(), typeof(int),
-              "argument is int");
-            Assert.AreEqual((int)request.args[0], 666, "argument is 666");
+            request.Method.ShouldBe("TestInt");
+            request.Args[0].ShouldBeOfType<int>();
+            ((int)request.Args[0]).ShouldBe(666);
         }
 
         [Test]
         public void NegativeInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -372,21 +352,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.IsTrue(request.method == "TestInt", "method is TestInt");
-            Assert.AreEqual(request.args[0].GetType(), typeof(int),
-              "argument is int");
-            Assert.AreEqual((int)request.args[0], -666, "argument is -666");
+            request.Method.ShouldBe("TestInt");
+            request.Args[0].ShouldBeOfType<int>();
+            ((int)request.Args[0]).ShouldBe(-666);
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void EmptyInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -395,16 +373,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var serializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = serializer.DeserializeRequest(sr, null);
+
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void InvalidInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -413,17 +390,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
-            Assert.Fail("Invalid integer should cause exception");
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void OverflowInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -432,15 +407,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
         public void ZeroInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -449,21 +424,19 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            var request = DeserializeRequest(Xml);
 
-            Assert.IsTrue(request.method == "TestInt", "method is TestInt");
-            Assert.AreEqual(request.args[0].GetType(), typeof(int),
-              "argument is int");
-            Assert.AreEqual((int)request.args[0], 0, "argument is 0");
+            request.Method.ShouldBe("TestInt");
+            request.Args[0].ShouldBeOfType<int>();
+            ((int)request.Args[0]).ShouldBe(0);
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void NegativeOverflowInteger()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -472,16 +445,16 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         // test handling i8 values
         [Test]
         public void I8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -492,18 +465,17 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
-            Assert.AreEqual(request.args[0].GetType(), typeof(long),
-              "argument is long");
-            Assert.AreEqual((long)request.args[0], 123456789012, "argument is 123456789012");
+            
+            var request = DeserializeRequest(Xml);
+            request.Args[0].ShouldBeOfType<long>();
+            ((long)request.Args[0]).ShouldBe(123456789012);
         }
 
         [Test]
         public void I8WithPlus()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -512,18 +484,17 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
-            Assert.AreEqual(request.args[0].GetType(), typeof(long),
-              "argument is long");
-            Assert.AreEqual((long)request.args[0], 123456789012, "argument is 123456789012");
+            
+            var request = DeserializeRequest(Xml);
+            request.Args[0].ShouldBeOfType<long>();
+            ((long)request.Args[0]).ShouldBe(123456789012);
         }
 
         [Test]
         public void NegativeI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -532,19 +503,17 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
-            Assert.AreEqual(request.args[0].GetType(), typeof(long),
-              "argument is long");
-            Assert.AreEqual((long)request.args[0], -123456789012, "argument is -123456789012");
+            
+            var request = DeserializeRequest(Xml);
+            request.Args[0].ShouldBeOfType<long>();
+            ((long)request.Args[0]).ShouldBe(-123456789012);
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void EmptyI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -553,16 +522,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void InvalidI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -571,16 +539,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void OverflowI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -589,15 +556,15 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
 
         [Test]
         public void ZeroI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
   <methodName>TestInt</methodName> 
   <params>
@@ -606,19 +573,17 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
-            Assert.AreEqual(request.args[0].GetType(), typeof(long),
-              "argument is long");
-            Assert.AreEqual((long)request.args[0], 0, "argument is 0");
+            
+            var request = DeserializeRequest(Xml);
+            request.Args[0].ShouldBeOfType<long>();
+            ((long)request.Args[0]).ShouldBe(0);
         }
 
         [Test]
-        [ExpectedException(typeof(XmlRpcInvalidXmlRpcException))]
         public void NegativeOverflowI8()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestInt</methodName> 
 <params>
@@ -627,24 +592,19 @@ namespace CookComputing.XmlRpc
   </param>
 </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            
+            Should.Throw<XmlRpcInvalidXmlRpcException>(() => DeserializeRequest(Xml));
         }
-
 
         [Test]
         public void ISO_8859_1()
         {
-            using (Stream stm = new FileStream("testdocuments/iso-8859-1_request.xml",
-                    FileMode.Open, FileAccess.Read))
+            using (var stm = new FileStream("testdocuments/iso-8859-1_request.xml", FileMode.Open, FileAccess.Read))
             {
                 var deserializer = new XmlRpcRequestDeserializer();
-                XmlRpcRequest request = deserializer.DeserializeRequest(stm, null);
-                Assert.AreEqual(request.args[0].GetType(), typeof(string),
-                  "argument is string");
-                Assert.AreEqual((string)request.args[0], "hæ hvað segirðu þá",
-                  "argument is 'hæ hvað segirðu þá'");
+                var request = deserializer.DeserializeRequest(stm, null);
+                request.Args[0].ShouldBeOfType<string>();
+                request.Args[0].ShouldBe("hæ hvað segirðu þá");
             }
         }
 
@@ -668,7 +628,8 @@ namespace CookComputing.XmlRpc
         [Test]
         public void StructProperties()
         {
-            string xml = @"<?xml version=""1.0""?>
+            const string Xml = 
+@"<?xml version=""1.0""?>
 <methodCall>
   <methodName>Foo</methodName>
   <params>
@@ -705,34 +666,29 @@ namespace CookComputing.XmlRpc
   </params>
 </methodCall>";
 
-            StringReader sr = new StringReader(xml);
-            var deserializer = new XmlRpcRequestDeserializer();
-            XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
+            var request = DeserializeRequest(Xml);
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(XmlRpcStruct),
-              "argument is XmlRpcStruct");
-            XmlRpcStruct xrs = (XmlRpcStruct)request.args[0];
-            Assert.IsTrue(xrs.Count == 4, "XmlRpcStruct has 4 members");
-            Assert.IsTrue(xrs.ContainsKey("member1") && (int)xrs["member1"] == 1,
-              "member1");
-            Assert.IsTrue(xrs.ContainsKey("member2") && (int)xrs["member2"] == 2,
-              "member2");
-            Assert.IsTrue(xrs.ContainsKey("member-3") && (int)xrs["member-3"] == 3,
-              "member-3");
-            Assert.IsTrue(xrs.ContainsKey("member-4") && (int)xrs["member-4"] == 4,
-              "member-4");
+            request.Args[0].ShouldBeOfType<XmlRpcStruct>();
 
-
-
+            var xrs = (XmlRpcStruct)request.Args[0];
+            xrs.ShouldSatisfyAllConditions(
+                () => xrs.Count.ShouldBe(4),
+                () => xrs.ContainsKey("member1").ShouldBeTrue(),
+                () => xrs["member1"].ShouldBe(1),
+                () => xrs.ContainsKey("member2").ShouldBeTrue(),
+                () => xrs["member2"].ShouldBe(2),
+                () => xrs.ContainsKey("member-3").ShouldBeTrue(),
+                () => xrs["member-3"].ShouldBe(4),
+                () => xrs.ContainsKey("member-4").ShouldBeTrue(),
+                () => xrs["member-4"].ShouldBe(4));
         }
 
         // test handling dateTime values
-
-
         [Test]
         public void DateTimeFormats()
         {
-            string xml = @"<?xml version=""1.0"" ?> 
+            const string Xml = 
+@"<?xml version=""1.0"" ?> 
 <methodCall>
 <methodName>TestDateTime</methodName> 
 <params>
@@ -751,68 +707,67 @@ namespace CookComputing.XmlRpc
 </params>
 </methodCall>";
 
-            StringReader sr = new StringReader(xml);
+            var sr = new StringReader(Xml);
             var deserializer = new XmlRpcRequestDeserializer();
             deserializer.NonStandard = XmlRpcNonStandard.AllowNonStandardDateTime;
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
 
-            Assert.IsTrue(request.args[0] is DateTime, "argument is DateTime");
-            DateTime dt0 = (DateTime)request.args[0];
-            DateTime dt1 = (DateTime)request.args[1];
-            DateTime dt2 = (DateTime)request.args[2];
-            DateTime dt3 = (DateTime)request.args[3];
+            request.Args[0].ShouldBeOfType<DateTime>();
+            request.Args[1].ShouldBeOfType<DateTime>();
+            request.Args[2].ShouldBeOfType<DateTime>();
+            request.Args[3].ShouldBeOfType<DateTime>();
 
-            DateTime dt = new DateTime(2002, 7, 7, 11, 25, 37);
-            Assert.AreEqual(dt0, dt, "DateTime WordPress");
-            Assert.AreEqual(dt0, dt, "DateTime XML-RPC spec");
-            Assert.AreEqual(dt0, dt, "DateTime TypePad");
-            Assert.AreEqual(dt0, dt, "DateTime other");
+            var dt0 = (DateTime)request.Args[0];
+            var dt1 = (DateTime)request.Args[1];
+            var dt2 = (DateTime)request.Args[2];
+            var dt3 = (DateTime)request.Args[3];
+
+            var dt = new DateTime(2002, 7, 7, 11, 25, 37);
+            dt0.ShouldBe(dt, "DateTime WordPress");
+            dt1.ShouldBe(dt, "DateTime XML-RPC spec");
+            dt2.ShouldBe(dt, "DateTime TypePad");
+            dt3.ShouldBe(dt, "DateTime other");
         }
 
         [Test]
         public void DateTimeLocales()
         {
-            CultureInfo oldci = Thread.CurrentThread.CurrentCulture;
+            var oldci = Thread.CurrentThread.CurrentCulture;
             try
             {
-                foreach (string locale in Utils.GetLocales())
+                Should.NotThrow(() =>
                 {
-                    try
+                    foreach (var locale in Utils.GetLocales())
                     {
-                        CultureInfo ci = new CultureInfo(locale);
+                        var ci = new CultureInfo(locale);
                         Thread.CurrentThread.CurrentCulture = ci;
                         if (ci.LCID == 0x401    // ar-SA  (Arabic - Saudi Arabia)
                           || ci.LCID == 0x465   // div-MV (Dhivehi - Maldives)
                           || ci.LCID == 0x41e)  // th-TH  (Thai - Thailand)
                             break;
 
-                        DateTime dt = new DateTime(1900, 01, 02, 03, 04, 05);
+                        var dt = new DateTime(1900, 01, 02, 03, 04, 05);
                         while (dt < DateTime.Now)
                         {
-                            Stream stm = new MemoryStream();
-                            XmlRpcRequest req = new XmlRpcRequest();
-                            req.args = new Object[] { dt };
-                            req.method = "Foo";
+                            var stm = new MemoryStream();
+                            var req = new XmlRpcRequest();
+                            req.Args = new object[] { dt };
+                            req.Method = "Foo";
+
                             var ser = new XmlRpcRequestSerializer();
                             ser.SerializeRequest(stm, req);
                             stm.Position = 0;
 
                             var deserializer = new XmlRpcRequestDeserializer();
-                            XmlRpcRequest request = deserializer.DeserializeRequest(stm, null);
+                            var request = deserializer.DeserializeRequest(stm, null);
 
-                            Assert.IsTrue(request.args[0] is DateTime,
-                              "argument is DateTime");
-                            DateTime dt0 = (DateTime)request.args[0];
-                            Assert.AreEqual(dt0, dt, "DateTime argument 0");
+                            request.Args[0].ShouldBeOfType<DateTime>();
+                            var dt0 = (DateTime)request.Args[0];
+                            dt0.ShouldBe(dt, "DateTime argument 0");
                             dt += new TimeSpan(100, 1, 1, 1);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Assert.Fail(String.Format("unexpected exception {0}: {1}",
-                          locale, ex.Message));
-                    }
-                }
+                });
             }
             finally
             {
@@ -820,22 +775,11 @@ namespace CookComputing.XmlRpc
             }
         }
 
-
-
-        //    // test handling double values
-        //
-        //
-        //    // test handling string values
-        //
-
-
-
-        //
-        //    // test handling base64 values
         [Test]
         public void Base64Empty()
         {
-            string xml = @"<?xml version=""1.0""?>
+            const string Xml = 
+@"<?xml version=""1.0""?>
 <methodCall>
   <methodName>TestHex</methodName>
   <params>
@@ -846,13 +790,13 @@ namespace CookComputing.XmlRpc
     </param>
   </params>
 </methodCall>";
-            StringReader sr = new StringReader(xml);
+            StringReader sr = new StringReader(Xml);
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(byte[]),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(byte[]),
               "argument is byte[]");
-            Assert.AreEqual(request.args[0], new byte[0],
+            Assert.AreEqual(request.Args[0], new byte[0],
               "argument is zero length byte[]");
         }
 
@@ -874,9 +818,9 @@ namespace CookComputing.XmlRpc
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(byte[]),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(byte[]),
               "argument is byte[]");
-            byte[] ret = (byte[])request.args[0];
+            byte[] ret = (byte[])request.Args[0];
             Assert.AreEqual(8, ret.Length, "argument is byte[8]");
             for (int i = 0; i < ret.Length; i++)
                 Assert.AreEqual(i + 1, ret[i], "members are 1 to 8");
@@ -901,9 +845,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, null);
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(byte[]),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(byte[]),
               "argument is byte[]");
-            byte[] ret = (byte[])request.args[0];
+            byte[] ret = (byte[])request.Args[0];
             Assert.AreEqual(17, ret.Length, "argument is byte[17]");
             for (int i = 0; i < 9; i++)
                 Assert.AreEqual(i + 1, ret[i], "first 9 members are 1 to 9");
@@ -1068,7 +1012,7 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(TestClass),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(TestClass),
               "argument is TestClass");
             //      XmlRpcStruct xrs = (XmlRpcStruct)request.args[0];
             //      Assert.IsTrue(xrs.Count == 4, "XmlRpcStruct has 4 members");
@@ -1140,9 +1084,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string),
               "argument is string");
-            Assert.AreEqual(" ", request.args[0],
+            Assert.AreEqual(" ", request.Args[0],
               "argument is string containing single space");
         }
 
@@ -1159,9 +1103,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string),
               "argument is string");
-            Assert.AreEqual("  ", request.args[0],
+            Assert.AreEqual("  ", request.Args[0],
               "argument is string containing two spaces");
         }
 
@@ -1178,9 +1122,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string),
               "argument is string");
-            Assert.AreEqual(" ddd", request.args[0]);
+            Assert.AreEqual(" ddd", request.Args[0]);
         }
 
         [Test]
@@ -1196,9 +1140,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string),
               "argument is string");
-            Assert.AreEqual("  ddd", request.args[0]);
+            Assert.AreEqual("  ddd", request.Args[0]);
         }
 
         [Test]
@@ -1215,9 +1159,9 @@ AQIDBAUGBwg=</base64>
             var deserializer = new XmlRpcRequestDeserializer();
             XmlRpcRequest request = deserializer.DeserializeRequest(sr, GetType());
 
-            Assert.AreEqual(request.args[0].GetType(), typeof(string),
+            Assert.AreEqual(request.Args[0].GetType(), typeof(string),
               "argument is string");
-            Assert.AreEqual("\r\n", request.args[0]);
+            Assert.AreEqual("\r\n", request.Args[0]);
         }
 
         [XmlRpcMethod("blogger.getUsersBlogs")]

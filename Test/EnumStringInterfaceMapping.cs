@@ -42,7 +42,7 @@ namespace CookComputing.XmlRpc
         {
             Stream stm = new MemoryStream();
             XmlRpcRequest req = new XmlRpcRequest();
-            req.args = new Object[] 
+            req.Args = new Object[] 
       { 
         IntEnum.Zero,
         new IntEnum[] { IntEnum.One, IntEnum.Two },
@@ -54,8 +54,8 @@ namespace CookComputing.XmlRpc
           intEnums = new ItfEnum[] { ItfEnum.Three, ItfEnum.Four },
         } 
       };
-            req.method = "MappingOnMethod";
-            req.mi = this.GetType().GetMethod("MappingOnMethod");
+            req.Method = "MappingOnMethod";
+            req.Mi = this.GetType().GetMethod("MappingOnMethod");
             var ser = new XmlRpcRequestSerializer();
             ser.SerializeRequest(stm, req);
             stm.Position = 0;

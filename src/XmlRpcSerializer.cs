@@ -21,9 +21,8 @@ namespace CookComputing.XmlRpc
     {
         protected XmlRpcFormatSettings XmlRpcFormatSettings { get; private set; }
 
-        public XmlRpcSerializer()
+        public XmlRpcSerializer() : this(new XmlRpcFormatSettings())
         {
-            XmlRpcFormatSettings = new XmlRpcFormatSettings();
         }
 
         public XmlRpcSerializer(XmlRpcFormatSettings settings)
@@ -31,44 +30,37 @@ namespace CookComputing.XmlRpc
             XmlRpcFormatSettings = settings;
         }
 
-        public int Indentation
-        {
+        public int Indentation {
             get { return XmlRpcFormatSettings.Indentation; }
             set { XmlRpcFormatSettings.Indentation = value; }
         }
 
-        public bool UseEmptyElementTags
-        {
+        public bool UseEmptyElementTags {
             get { return XmlRpcFormatSettings.UseEmptyElementTags; }
             set { XmlRpcFormatSettings.UseEmptyElementTags = value; }
         }
 
-        public bool UseEmptyParamsTag
-        {
+        public bool UseEmptyParamsTag {
             get { return XmlRpcFormatSettings.UseEmptyParamsTag; }
             set { XmlRpcFormatSettings.UseEmptyParamsTag = value; }
         }
 
-        public bool UseIndentation
-        {
+        public bool UseIndentation {
             get { return XmlRpcFormatSettings.UseIndentation; }
             set { XmlRpcFormatSettings.UseIndentation = value; }
         }
 
-        public bool UseIntTag
-        {
+        public bool UseIntTag {
             get { return XmlRpcFormatSettings.UseIntTag; }
             set { XmlRpcFormatSettings.UseIntTag = value; }
         }
 
-        public bool UseStringTag
-        {
+        public bool UseStringTag {
             get { return XmlRpcFormatSettings.UseStringTag; }
             set { XmlRpcFormatSettings.UseStringTag = value; }
         }
 
-        public Encoding XmlEncoding
-        {
+        public Encoding XmlEncoding {
             get { return XmlRpcFormatSettings.XmlEncoding; }
             set { XmlRpcFormatSettings.XmlEncoding = value; }
         }
@@ -153,7 +145,7 @@ namespace CookComputing.XmlRpc
 
                 WriteFullEndElement(xtw);
             }
-            catch (System.NullReferenceException)
+            catch (NullReferenceException)
             {
                 throw new XmlRpcNullReferenceException("Attempt to serialize data " + "containing null reference");
             }
@@ -177,7 +169,11 @@ namespace CookComputing.XmlRpc
             WriteFullEndElement(xtw);
         }
 
-        private void SerializeMultiDimensionalArray(XmlWriter xtw, object o, MappingActions mappingActions, List<object> nestedObjs)
+        private void SerializeMultiDimensionalArray(
+            XmlWriter xtw,
+            object o,
+            MappingActions mappingActions,
+            List<object> nestedObjs)
         {
             var mda = (Array)o;
             var indices = new int[mda.Rank];
@@ -211,7 +207,11 @@ namespace CookComputing.XmlRpc
             WriteFullElementString(xtw, "double", doubleVal.ToString(null, CultureInfo.InvariantCulture));
         }
 
-        private void SerializeHashTable(XmlWriter xtw, object o, MappingActions mappingActions, List<object> nestedObjs)
+        private void SerializeHashTable(
+            XmlWriter xtw,
+            object o,
+            MappingActions mappingActions,
+            List<object> nestedObjs)
         {
             xtw.WriteStartElement(string.Empty, "struct", string.Empty);
             var xrs = o as XmlRpcStruct;
@@ -299,7 +299,12 @@ namespace CookComputing.XmlRpc
             WriteFullEndElement(xtw);
         }
 
-        private void SerializeField(XmlWriter xtw, object o, List<object> nestedObjs, MemberInfo mi, MappingActions structActions)
+        private void SerializeField(
+            XmlWriter xtw,
+            object o,
+            List<object> nestedObjs,
+            MemberInfo mi,
+            MappingActions structActions)
         {
             var fi = (FieldInfo)mi;
             var member = fi.Name;
@@ -334,7 +339,12 @@ namespace CookComputing.XmlRpc
             WriteFullEndElement(xtw);
         }
 
-        private void SerializeProperty(XmlWriter xtw, object o, List<object> nestedObjs, MemberInfo mi, MappingActions structActions)
+        private void SerializeProperty(
+            XmlWriter xtw,
+            object o,
+            List<object> nestedObjs,
+            MemberInfo mi,
+            MappingActions structActions)
         {
             var pi = (PropertyInfo)mi;
             var member = pi.Name;
@@ -440,8 +450,7 @@ namespace CookComputing.XmlRpc
         {
             if (UseIndentation)
             {
-                return new XmlWriterSettings
-                {
+                return new XmlWriterSettings {
                     Indent = true,
                     IndentChars = new string(' ', Indentation),
                     Encoding = XmlEncoding,
@@ -524,8 +533,7 @@ namespace CookComputing.XmlRpc
             if (cap == null)
                 return mappingActions;
 
-            var ret = new MappingActions
-            {
+            var ret = new MappingActions {
                 EnumMapping = mappingActions.EnumMapping,
                 NullMappingAction = mappingActions.NullMappingAction
             };
